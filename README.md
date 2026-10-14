@@ -13,7 +13,7 @@ Open `http://localhost:3000`. `npm run build` creates the production build and `
 
 ## Deploy to Cloudflare Workers
 
-This project uses the OpenNext Cloudflare adapter. In the Cloudflare Workers build settings, set the deploy command to `npm run deploy`. The adapter builds the Next.js app and deploys the generated Worker. For a local Workers preview, run `npm run preview`.
+This project uses the OpenNext Cloudflare adapter. The Wrangler build hook runs the OpenNext build automatically before deployment, so both `npx wrangler deploy` and `npm run deploy` work. For a local Workers preview, run `npm run preview`.
 
 ## Storefront features
 
