@@ -15,6 +15,8 @@ Open `http://localhost:3000`. `npm run build` creates the production build and `
 
 This project uses the OpenNext Cloudflare adapter. The Wrangler build hook runs the OpenNext build automatically before deployment, so both `npx wrangler deploy` and `npm run deploy` work. For a local Workers preview, run `npm run preview`.
 
+The current released adapter does not yet inline Next.js 16.4's `preview-props.json` manifest. The postinstall script applies the upstream one-line manifest-glob fix so dynamic routes work on Workers. Remove that workaround after a released adapter version includes the fix.
+
 ## Storefront features
 
 - Marketplace home page with category navigation, featured finds, new arrivals, best sellers, and independent seller spotlights.
