@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import { money } from "../lib/catalog";
 import { useStore } from "./StoreProvider";
 import { useCatalogProducts } from "./useCatalogProducts";
+import StoreAdBanners from "./StoreAdBanners";
 
 export function ProductVisual({ product, large = false, showBadge = true }) {
   const photo = product.photos?.[0] || product.photo;
@@ -35,9 +37,31 @@ export default function ProductCard({ product }) {
   return <article className="product-card"><Link href={`/product/${product.slug}`} className="product-picture-link" aria-label={`View ${product.name}`}><ProductVisual product={product}/></Link><button className={`quick-heart ${saved ? "is-saved" : ""}`} onClick={() => toggleWishlist(product)} aria-label={saved ? "Remove from wishlist" : "Add to wishlist"}>{saved ? "♥" : "♡"}</button><div className="product-details"><Link className="product-vendor" href={`/stores/${product.seller.toLowerCase().replaceAll(" & ", "-and-").replaceAll(" ", "-")}`}>{product.seller}</Link><Link className="product-name" href={`/product/${product.slug}`}>{product.name}</Link><div className="product-rating"><span>★★★★★</span><small>({product.reviews})</small></div><div className="price-line"><b>{money(product.price)}{priceUnit}</b>{product.oldPrice && <del>{money(product.oldPrice)}</del>}</div>{product.listingType ? <Link className="add-button add-link" href={`/product/${product.slug}`}>View listing</Link> : product.sizes?.length ? <Link className="add-button add-link" href={`/product/${product.slug}`}>Choose options</Link> : <button className="add-button" onClick={() => addToCart(product)}>Add to cart</button>}</div></article>;
 }
 
-export function ProductGrid({ items, emptyMessage = "No products found." }) {
+export function ProductGrid({ items, emptyMessage = "No products found.", adPlacement = "" }) {
   const stored = useCatalogProducts();
+  const gridRef = useRef(null);
+  const [columns, setColumns] = useState(4);
   const visible = items.map(item => stored.find(product => product.id === item.id)).filter(Boolean);
+  useEffect(() => {
+    if (!adPlacement || !gridRef.current) return;
+    const grid = gridRef.current;
+    const updateColumns = () => setColumns(getComputedStyle(grid).gridTemplateColumns.split(" ").filter(Boolean).length || 1);
+    updateColumns();
+    const observer = new ResizeObserver(updateColumns);
+    observer.observe(grid);
+    return () => observer.disconnect();
+  }, [adPlacement]);
   if (!visible.length) return <div className="empty-state"><span>⌕</span><h2>Nothing here yet</h2><p>{emptyMessage}</p><Link className="button-primary" href="/shop">Browse all products</Link></div>;
-  return <div className="product-grid">{visible.map(product => <ProductCard key={product.id} product={product}/>)}</div>;
+  const productCards = visible.map(product => <ProductCard key={product.id} product={product}/>);
+  if (!adPlacement) return <div className="product-grid">{productCards}</div>;
+  const productsPerAd = columns * 2;
+  const gridItems = [];
+  let adIndex = 0;
+  productCards.forEach((card, index) => {
+    gridItems.push(card);
+    if ((index + 1) % productsPerAd === 0 && index < productCards.length - 1) {
+      gridItems.push(<StoreAdBanners key={`ad-${index}`} placement={adPlacement} variant="card" adIndex={adIndex++}/>);
+    }
+  });
+  return <div className="product-grid" ref={gridRef}>{gridItems}</div>;
 }
