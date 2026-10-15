@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { seedBanners } from "../lib/catalog";
 import { ADMIN_BANNERS_KEY, readStored, saveStored } from "../lib/admin-data";
+import { getYouTubeEmbedUrl } from "../lib/youtube";
 
 const SIDE_BANNERS_MIGRATION_KEY = "openshop-side-banners-migrated-v1";
 const PRODUCT_ADS_MIGRATION_KEY = "openshop-product-ad-cards-migrated-v1";
@@ -48,13 +49,14 @@ export default function StoreAdBanners({ placement = "global", variant = "banner
 
   const visible = banners.filter(banner => banner.active !== false && banner.placement === placement);
   if (variant === "video") {
-    const videos = visible.filter(banner => banner.videoUrl);
+    const videos = visible.filter(banner => getYouTubeEmbedUrl(banner.videoUrl));
+    if (!videos.length) return null;
     return <section className={`store-sponsored-videos video-placement-${placement}`} aria-label="Sponsored videos">
       <div className="store-sponsored-videos-heading"><span>SPONSORED VIDEO</span><small>Featured stories from our advertising partners</small></div>
-      {videos.length ? <div className="store-sponsored-videos-grid">{videos.map(banner => <article className="store-sponsored-video" key={banner.id}>
-        <video controls playsInline preload="metadata" poster={banner.image || undefined} aria-label={`Sponsored video: ${banner.headline}`}><source src={banner.videoUrl}/></video>
+      <div className="store-sponsored-videos-grid">{videos.map(banner => <article className="store-sponsored-video" key={banner.id}>
+        <iframe src={getYouTubeEmbedUrl(banner.videoUrl)} title={`Sponsored video: ${banner.headline}`} loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen/>
         <div className="store-sponsored-video-copy"><small>SPONSORED</small><b>{banner.headline}</b>{banner.message && <p>{banner.message}</p>}{/^https?:\/\//i.test(banner.href || "") ? <a href={banner.href}>{banner.cta || "Learn more"} <span>→</span></a> : <Link href={banner.href || "/shop"}>{banner.cta || "Learn more"} <span>→</span></Link>}</div>
-      </article>)}</div> : <div className="store-video-empty"><span aria-hidden="true">▶</span><small>VIDEO AD SPACE</small><b>Showcase your products to local shoppers</b><Link href="/contact">Advertise with Open Shop →</Link></div>}
+      </article>)}</div>
     </section>;
   }
   if (!visible.length) return null;
