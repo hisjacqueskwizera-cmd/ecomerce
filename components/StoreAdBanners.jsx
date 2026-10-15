@@ -47,6 +47,16 @@ export default function StoreAdBanners({ placement = "global", variant = "banner
   }, []);
 
   const visible = banners.filter(banner => banner.active !== false && banner.placement === placement);
+  if (variant === "video") {
+    const videos = visible.filter(banner => banner.videoUrl);
+    return <section className={`store-sponsored-videos video-placement-${placement}`} aria-label="Sponsored videos">
+      <div className="store-sponsored-videos-heading"><span>SPONSORED VIDEO</span><small>Featured stories from our advertising partners</small></div>
+      {videos.length ? <div className="store-sponsored-videos-grid">{videos.map(banner => <article className="store-sponsored-video" key={banner.id}>
+        <video controls playsInline preload="metadata" poster={banner.image || undefined} aria-label={`Sponsored video: ${banner.headline}`}><source src={banner.videoUrl}/></video>
+        <div className="store-sponsored-video-copy"><small>SPONSORED</small><b>{banner.headline}</b>{banner.message && <p>{banner.message}</p>}{/^https?:\/\//i.test(banner.href || "") ? <a href={banner.href}>{banner.cta || "Learn more"} <span>→</span></a> : <Link href={banner.href || "/shop"}>{banner.cta || "Learn more"} <span>→</span></Link>}</div>
+      </article>)}</div> : <div className="store-video-empty"><span aria-hidden="true">▶</span><small>VIDEO AD SPACE</small><b>Showcase your products to local shoppers</b><Link href="/contact">Advertise with Open Shop →</Link></div>}
+    </section>;
+  }
   if (!visible.length) return null;
 
   if (variant === "card") {

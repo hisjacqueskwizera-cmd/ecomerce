@@ -36,6 +36,8 @@ export default function Home() {
 
     <StoreAdBanners placement="after_popular"/>
 
+    <StoreAdBanners placement="video_home" variant="video"/>
+
     {sections.promotions.active && <section className="home-promo-grid"><article className="home-promo-card promo-yellow"><span className="market-kicker">{sections.promotions.eyebrow}</span><h2>{sections.promotions.title}</h2><p>{sections.promotions.text}</p><Link href="/shop?sort=popular">Explore offers <span>→</span></Link></article><article className="home-promo-card promo-blue"><span className="market-kicker">SELL ON OPEN SHOP</span><h2>Bring your store online</h2><p>Reach customers from Kigali to every district.</p><Link href="/sell">Start selling <span>→</span></Link></article><article className="home-promo-card promo-green"><span className="market-kicker">PROPERTY MARKETPLACE</span><h2>Homes, land, and spaces</h2><p>Browse real estate listings from local providers.</p><Link href="/shop?category=Real%20Estate">View properties <span>→</span></Link></article></section>}
 
     {sections.newArrivals.active && <section className="market-panel"><div className="market-panel-heading"><div><span className="market-kicker">{sections.newArrivals.eyebrow}</span><h2>{sections.newArrivals.title}</h2></div><Link href="/shop?sort=newest">Shop new arrivals <span>→</span></Link></div><ProductGrid items={products.slice(4, 9)}/></section>}
