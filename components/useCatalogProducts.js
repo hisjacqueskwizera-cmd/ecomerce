@@ -1,32 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { products as seedProducts } from "../lib/catalog";
-import { ADMIN_PRODUCTS_KEY, readStored } from "../lib/admin-data";
+import { createSupabaseBrowserClient, uniqueRealtimeTopic } from "../lib/supabase/client";
+import { productFromRow } from "../lib/marketplace-db";
 
 export function useCatalogProducts() {
-  const [catalogProducts, setCatalogProducts] = useState(seedProducts);
-
+  const [catalogProducts, setCatalogProducts] = useState([]);
   useEffect(() => {
-    function refresh() {
-      const saved = readStored(ADMIN_PRODUCTS_KEY, seedProducts);
-      setCatalogProducts(Array.isArray(saved) ? saved : seedProducts);
-    }
-    function onStorage(event) {
-      if (event.key === ADMIN_PRODUCTS_KEY || event.key === null) refresh();
-    }
-    function onLocalUpdate(event) {
-      if (event.detail === ADMIN_PRODUCTS_KEY) refresh();
-    }
-
-    refresh();
-    window.addEventListener("storage", onStorage);
-    window.addEventListener("openshop:storage-updated", onLocalUpdate);
-    return () => {
-      window.removeEventListener("storage", onStorage);
-      window.removeEventListener("openshop:storage-updated", onLocalUpdate);
+    const supabase = createSupabaseBrowserClient();
+    let alive = true;
+    const load = async () => {
+      const { data, error } = await supabase.from("catalog_products").select("*").eq("active", true).order("created_at");
+      if (alive && !error) setCatalogProducts((data || []).map(productFromRow));
     };
+    load();
+    const channel = supabase.channel(uniqueRealtimeTopic("catalog-products-live")).on("postgres_changes", { event: "*", schema: "public", table: "catalog_products" }, load).subscribe();
+    return () => { alive = false; supabase.removeChannel(channel); };
   }, []);
-
   return catalogProducts;
 }

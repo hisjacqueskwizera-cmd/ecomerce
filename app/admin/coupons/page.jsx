@@ -2,29 +2,36 @@
 
 import { useEffect, useState } from "react";
 import { categories, money } from "../../../lib/catalog";
-import { ADMIN_COUPONS_KEY, coupons as seedCoupons, getCoupons } from "../../../lib/coupons";
+import { couponFromRow } from "../../../lib/coupons";
+import { createSupabaseBrowserClient } from "../../../lib/supabase/client";
 import SearchableSelect from "../../../components/SearchableSelect";
 
 const blank = { code: "", type: "percent", value: "10", minimum: "0", maximum: "", description: "", active: true, categories: [] };
 
 export default function AdminCouponsPage() {
-  const [items, setItems] = useState(seedCoupons);
+  const [items, setItems] = useState([]);
   const [modal, setModal] = useState(null);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [formError, setFormError] = useState("");
-  useEffect(() => setItems(getCoupons()), []);
-  function commit(next) { setItems(next); localStorage.setItem(ADMIN_COUPONS_KEY, JSON.stringify(next)); }
+  const supabase = createSupabaseBrowserClient();
+  async function refresh() {
+    const { data, error } = await supabase.from("store_coupons").select("*").order("code");
+    if (error) setFormError(`${error.message}. Run database/supabase-marketplace.sql first.`);
+    else setItems((data || []).map(couponFromRow));
+  }
+  useEffect(() => { refresh(); }, []);
   function edit(item) { setModal(item ? { ...item } : { ...blank }); setSelectedCategories(item?.categories || []); setFormError(""); }
-  function submit(event) {
+  async function submit(event) {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const coupon = { ...modal, code: String(data.get("code") ?? modal.code).trim().toUpperCase().replace(/\s+/g, ""), type: data.get("type"), value: Number(data.get("value") || 0), minimum: Number(data.get("minimum") || 0), maximum: Number(data.get("maximum") || 0) || undefined, expiresAt: data.get("expiresAt") || "", description: data.get("description"), categories: selectedCategories.length ? selectedCategories : undefined, active: modal.active !== false };
     if (items.some(item => item.code === coupon.code && item.code !== modal.code)) { setFormError("That coupon code already exists. Choose a different code."); return; }
-    const next = items.some(item => item.code === modal.code) ? items.map(item => item.code === modal.code ? coupon : item) : [coupon, ...items];
-    commit(next); setModal(null);
+    const { error } = await supabase.from("store_coupons").upsert({ code: coupon.code, discount_type: coupon.type, discount_value: coupon.value, minimum: coupon.minimum, maximum: coupon.maximum || null, description: coupon.description, categories: coupon.categories || [], expires_at: coupon.expiresAt || null, active: coupon.active !== false });
+    if (error) { setFormError(error.message); return; }
+    setModal(null); refresh();
   }
-  function toggle(item) { commit(items.map(coupon => coupon.code === item.code ? { ...coupon, active: coupon.active === false } : coupon)); }
-  function remove(item) { if (window.confirm(`Delete coupon ${item.code}?`)) commit(items.filter(coupon => coupon.code !== item.code)); }
+  async function toggle(item) { const { error } = await supabase.from("store_coupons").update({ active: item.active === false }).eq("code", item.code); if (error) setFormError(error.message); else refresh(); }
+  async function remove(item) { if (window.confirm(`Delete coupon ${item.code}?`)) { const { error } = await supabase.from("store_coupons").delete().eq("code", item.code); if (error) setFormError(error.message); else refresh(); } }
   const activeCount = items.filter(item => item.active !== false).length;
   return <>
     <div className="admin-page-heading"><div><h1>Coupons</h1><p>Create percentage, fixed amount, and free shipping offers for the storefront.</p></div><button className="admin-primary" onClick={() => edit(null)}>＋ Create coupon</button></div>

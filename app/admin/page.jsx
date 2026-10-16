@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { money, products as seedProducts, categories } from "../../lib/catalog";
-import { ADMIN_ORDERS_KEY, ADMIN_PRODUCTS_KEY, readStored } from "../../lib/admin-data";
+import { money, categories } from "../../lib/catalog";
+import { ADMIN_ORDERS_KEY, readStored } from "../../lib/admin-data";
+import { useCatalogProducts } from "../../components/useCatalogProducts";
 
 function SalesChart({ orders }) {
   const points = useMemo(() => {
@@ -23,8 +24,8 @@ function SalesChart({ orders }) {
 
 export default function AdminDashboard() {
   const [orders, setOrders] = useState([]);
-  const [adminProducts, setAdminProducts] = useState(seedProducts);
-  useEffect(() => { setOrders(readStored(ADMIN_ORDERS_KEY, [])); setAdminProducts(readStored(ADMIN_PRODUCTS_KEY, seedProducts)); }, []);
+  const adminProducts = useCatalogProducts();
+  useEffect(() => { setOrders(readStored(ADMIN_ORDERS_KEY, [])); }, []);
   const revenue = orders.filter(order => order.status !== "Cancelled").reduce((sum, order) => sum + Number(order.total || 0), 0);
   const customers = new Set(orders.map(order => order.email).filter(Boolean)).size;
   const stock = adminProducts.reduce((sum, product) => sum + Number(product.stock || 0), 0);

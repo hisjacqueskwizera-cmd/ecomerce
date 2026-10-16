@@ -2,50 +2,24 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { seedBanners } from "../lib/catalog";
-import { ADMIN_BANNERS_KEY, readStored, saveStored } from "../lib/admin-data";
+import { createSupabaseBrowserClient, uniqueRealtimeTopic } from "../lib/supabase/client";
+import { campaignFromRow } from "../lib/marketplace-db";
 import { getYouTubeEmbedUrl } from "../lib/youtube";
 
-const SIDE_BANNERS_MIGRATION_KEY = "openshop-side-banners-migrated-v1";
-const PRODUCT_ADS_MIGRATION_KEY = "openshop-product-ad-cards-migrated-v1";
-
 export default function StoreAdBanners({ placement = "global", variant = "banner", adIndex = 0 }) {
-  const [banners, setBanners] = useState(seedBanners);
+  const [banners, setBanners] = useState([]);
 
   useEffect(() => {
-    const refresh = () => {
-      const saved = readStored(ADMIN_BANNERS_KEY, seedBanners);
-      let current = Array.isArray(saved) ? saved : seedBanners;
-      if (!localStorage.getItem(SIDE_BANNERS_MIGRATION_KEY)) {
-        const sideDefaults = seedBanners.filter(banner => banner.placement === "side_left" || banner.placement === "side_right");
-        const missingDefaults = sideDefaults.filter(seed => !current.some(banner => banner.id === seed.id));
-        if (missingDefaults.length) {
-          current = [...current, ...missingDefaults];
-          saveStored(ADMIN_BANNERS_KEY, current);
-        }
-        localStorage.setItem(SIDE_BANNERS_MIGRATION_KEY, "done");
-      }
-      if (!localStorage.getItem(PRODUCT_ADS_MIGRATION_KEY)) {
-        const productDefaults = seedBanners.filter(banner => banner.placement === "product_grid" || banner.placement === "product_detail");
-        const missingDefaults = productDefaults.filter(seed => !current.some(banner => banner.id === seed.id));
-        if (missingDefaults.length) {
-          current = [...current, ...missingDefaults];
-          saveStored(ADMIN_BANNERS_KEY, current);
-        }
-        localStorage.setItem(PRODUCT_ADS_MIGRATION_KEY, "done");
-      }
-      setBanners(current);
+    const supabase = createSupabaseBrowserClient();
+    let alive = true;
+    const refresh = async () => {
+      const { data, error } = await supabase.from("ad_campaigns").select("*").eq("active", true).eq("placement", placement).order("display_order");
+      if (alive && !error) setBanners((data || []).map(campaignFromRow));
     };
-    const onStorage = event => { if (event.key === ADMIN_BANNERS_KEY || event.key === null) refresh(); };
-    const onUpdate = event => { if (event.detail === ADMIN_BANNERS_KEY) refresh(); };
     refresh();
-    window.addEventListener("storage", onStorage);
-    window.addEventListener("openshop:storage-updated", onUpdate);
-    return () => {
-      window.removeEventListener("storage", onStorage);
-      window.removeEventListener("openshop:storage-updated", onUpdate);
-    };
-  }, []);
+    const channel = supabase.channel(uniqueRealtimeTopic(`campaigns-${placement}`)).on("postgres_changes", { event: "*", schema: "public", table: "ad_campaigns", filter: `placement=eq.${placement}` }, refresh).subscribe();
+    return () => { alive = false; supabase.removeChannel(channel); };
+  }, [placement]);
 
   const visible = banners.filter(banner => banner.active !== false && banner.placement === placement);
   if (variant === "video") {

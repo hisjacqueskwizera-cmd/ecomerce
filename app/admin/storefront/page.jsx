@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { defaultStorefrontConfig, mergeStorefrontConfig, STOREFRONT_CONFIG_KEY } from "../../../lib/storefront-config";
-import { readStored } from "../../../lib/admin-data";
 import { updateStorefrontConfig } from "../../../components/useStorefrontConfig";
+import { createSupabaseBrowserClient } from "../../../lib/supabase/client";
 
 const sectionNames = {
   departments: "Departments and categories",
@@ -19,7 +19,11 @@ const sectionNames = {
 export default function AdminStorefrontPage() {
   const [config, setConfig] = useState(defaultStorefrontConfig);
   const [saved, setSaved] = useState(false);
-  useEffect(() => setConfig(mergeStorefrontConfig(readStored(STOREFRONT_CONFIG_KEY, defaultStorefrontConfig))), []);
+  useEffect(() => {
+    let alive = true;
+    createSupabaseBrowserClient().from("storefront_settings").select("setting_value").eq("setting_key", "main").maybeSingle().then(({ data }) => { if (alive && data?.setting_value) setConfig(mergeStorefrontConfig(data.setting_value)); });
+    return () => { alive = false; };
+  }, []);
   function setValue(group, key, value) {
     setConfig(current => ({ ...current, [group]: { ...current[group], [key]: value } }));
     setSaved(false);
@@ -28,10 +32,10 @@ export default function AdminStorefrontPage() {
     setConfig(current => ({ ...current, home: { ...current.home, sections: { ...current.home.sections, [id]: { ...current.home.sections[id], [key]: value } } } }));
     setSaved(false);
   }
-  function save(event) {
+  async function save(event) {
     event.preventDefault();
-    try { setConfig(updateStorefrontConfig(config)); setSaved(true); }
-    catch { setSaved(false); window.alert("Storefront content could not be saved in this browser. Try shortening the content."); }
+    try { setConfig(await updateStorefrontConfig(config)); setSaved(true); }
+    catch (error) { setSaved(false); window.alert(`Storefront content could not be saved to Supabase: ${error.message}`); }
   }
   function updateNav(index, key, value) {
     const nav = config.chrome.nav.map((item, i) => i === index ? { ...item, [key]: value } : item);

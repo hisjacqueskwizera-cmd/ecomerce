@@ -6,13 +6,15 @@ import { Breadcrumbs, StoreLayout, PageTitle } from "../../components/StoreChrom
 import { ProductVisual } from "../../components/ProductCard";
 import CouponBox from "../../components/CouponBox";
 import { calculateCoupon } from "../../lib/coupons";
+import { useCoupons } from "../../components/useCoupons";
 import { FREE_SHIPPING_THRESHOLD, STANDARD_SHIPPING_FEE, money } from "../../lib/catalog";
 
 export default function CartPage() {
   const { cart, subtotal, setQuantity, removeFromCart, appliedCouponCode } = useStore();
+  const coupons = useCoupons();
   const shippableItems = cart.some(item => item.category !== "Services");
   const shipping = !shippableItems || subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : STANDARD_SHIPPING_FEE;
-  const coupon = calculateCoupon(appliedCouponCode, cart, shipping);
+  const coupon = calculateCoupon(appliedCouponCode, cart, shipping, coupons);
   const discount = coupon.valid ? coupon.discount : 0;
   const shippingDiscount = coupon.valid ? coupon.shippingDiscount : 0;
   const total = subtotal - discount + shipping - shippingDiscount;

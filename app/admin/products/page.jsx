@@ -1,10 +1,11 @@
 ﻿"use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { categories, money, products as seedProducts, rwandaDistricts, sellers } from "../../../lib/catalog";
-import { ADMIN_PRODUCTS_KEY, readStored, saveStored } from "../../../lib/admin-data";
+import { categories, money, rwandaDistricts } from "../../../lib/catalog";
 import SearchableSelect from "../../../components/SearchableSelect";
 import { ProductVisual } from "../../../components/ProductCard";
+import { createSupabaseBrowserClient } from "../../../lib/supabase/client";
+import { productFromRow, productToRow, uploadMarketplaceImage } from "../../../lib/marketplace-db";
 
 const blank = { category: categories[2] };
 const artChoices = ["tote", "sneaker", "vase", "backpack", "hoodie", "earbuds", "shirt", "cushion"];
@@ -30,7 +31,8 @@ const categoryFields = {
 };
 
 export default function AdminProductsPage() {
-  const [items, setItems] = useState(seedProducts);
+  const [items, setItems] = useState([]);
+  const [sellers, setSellers] = useState([]);
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("All categories");
   const [modal, setModal] = useState(null);
@@ -39,9 +41,20 @@ export default function AdminProductsPage() {
   const [retainedPhotos, setRetainedPhotos] = useState([]);
   const imagePreviews = useMemo(() => selectedImages.map(file => URL.createObjectURL(file)), [selectedImages]);
 
-  useEffect(() => setItems(readStored(ADMIN_PRODUCTS_KEY, seedProducts)), []);
+  const supabase = createSupabaseBrowserClient();
+  async function refresh() {
+    const [{ data, error }, { data: storeData }] = await Promise.all([supabase.from("catalog_products").select("*").order("created_at"), supabase.from("seller_stores").select("name").eq("status", "active").order("name")]);
+    if (!error) setItems((data || []).map(productFromRow));
+    setSellers(storeData || []);
+    if (error) setFormError(`${error.message}. Run database/supabase-marketplace.sql first.`);
+  }
+  useEffect(() => { refresh(); }, []);
   useEffect(() => () => imagePreviews.forEach(URL.revokeObjectURL), [imagePreviews]);
-  function commit(next) { saveStored(ADMIN_PRODUCTS_KEY, next); setItems(next); }
+  async function commit(product, removing = false) {
+    const result = removing ? await supabase.from("catalog_products").delete().eq("id", product.id) : await supabase.from("catalog_products").upsert(productToRow(product));
+    if (result.error) throw result.error;
+    await refresh();
+  }
   const visible = useMemo(() => items.filter(item => (filter === "All categories" || item.category === filter) && `${item.name} ${item.seller} ${item.category}`.toLowerCase().includes(query.trim().toLowerCase())), [items, filter, query]);
 
   async function submitProduct(event) {
@@ -59,13 +72,18 @@ export default function AdminProductsPage() {
     if (photoFiles.some(file => !file.type.startsWith("image/"))) { setFormError("Choose image files only."); return; }
 
     setFormError("");
-    let photos = [...retainedPhotos];
+    let photos;
+    try { photos = await Promise.all(retainedPhotos.map(async photo => {
+      if (!photo.startsWith("/images/")) return photo;
+      const response = await fetch(photo);
+      if (!response.ok) throw new Error(`Could not load ${photo}`);
+      const blob = await response.blob();
+      return uploadMarketplaceImage(new File([blob], photo.split("/").pop(), { type: blob.type || "image/jpeg" }), "products");
+    })); }
+    catch (error) { setFormError(error.message); return; }
     if (photoFiles.length) {
-      try { photos = [...photos, ...await Promise.all(photoFiles.map(optimizeImage))]; }
-      catch { setFormError("An image could not be processed. Try another image."); return; }
-      if (photos.some(photo => photo.length > 450_000) || photos.reduce((sum, photo) => sum + photo.length, 0) > 1_800_000) {
-        setFormError("The image gallery is too large after compression. Choose smaller images or fewer images."); return;
-      }
+      try { photos = [...photos, ...await Promise.all(photoFiles.map(file => uploadMarketplaceImage(file, "products")))]; }
+      catch (error) { setFormError(error.message); return; }
     }
     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     const product = {
@@ -80,13 +98,15 @@ export default function AdminProductsPage() {
       areaSqm: Number(data.get("areaSqm") || 0) || undefined, priceUnit: data.get("priceUnit") || undefined,
       attributes: Object.fromEntries((categoryFields[category] || []).map(field => [field.key, String(data.get(field.key) || "").trim()]).filter(([, value]) => value)),
     };
-    try { commit(modal?.product ? items.map(item => item.id === product.id ? product : item) : [product, ...items]); }
-    catch { setFormError("The browser could not save this product. The image may exceed available local storage."); return; }
+    try { await commit(product); }
+    catch (error) { setFormError(error.message); return; }
     setModal(null); setSelectedImages([]); setRetainedPhotos([]);
   }
 
-  function remove(product) {
-    if (window.confirm(`Remove ${product.name} from the admin catalog?`)) commit(items.filter(item => item.id !== product.id));
+  async function remove(product) {
+    if (window.confirm(`Remove ${product.name} from the admin catalog?`)) {
+      try { await commit(product, true); } catch (error) { setFormError(error.message); }
+    }
   }
   function openProduct(product = null) {
     setFormError(""); setSelectedImages([]);

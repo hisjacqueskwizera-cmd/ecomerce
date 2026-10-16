@@ -10,14 +10,16 @@ import DistrictOptions from "../../components/DistrictOptions";
 import CouponBox from "../../components/CouponBox";
 import { FREE_SHIPPING_THRESHOLD, STANDARD_SHIPPING_FEE, money } from "../../lib/catalog";
 import { calculateCoupon } from "../../lib/coupons";
+import { useCoupons } from "../../components/useCoupons";
 
 export default function CheckoutPage() {
   const { cart, subtotal, clearCart, appliedCouponCode, clearCoupon } = useStore();
+  const coupons = useCoupons();
   const router = useRouter();
   const [district, setDistrict] = useState("");
   const shippableItems = cart.some(item => item.category !== "Services");
   const shipping = !shippableItems || subtotal >= FREE_SHIPPING_THRESHOLD || subtotal === 0 ? 0 : STANDARD_SHIPPING_FEE;
-  const coupon = calculateCoupon(appliedCouponCode, cart, shipping);
+  const coupon = calculateCoupon(appliedCouponCode, cart, shipping, coupons);
   const discount = coupon.valid ? coupon.discount : 0;
   const shippingDiscount = coupon.valid ? coupon.shippingDiscount : 0;
   const total = subtotal - discount + shipping - shippingDiscount;

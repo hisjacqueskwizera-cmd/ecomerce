@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { coupons as seedCoupons, calculateCoupon, getCoupons } from "../lib/coupons";
+import { calculateCoupon } from "../lib/coupons";
+import { useCoupons } from "./useCoupons";
 import { money } from "../lib/catalog";
 import { useStore } from "./StoreProvider";
 
@@ -9,11 +10,11 @@ export default function CouponBox({ items, shipping }) {
   const { appliedCouponCode, applyCoupon, clearCoupon } = useStore();
   const [code, setCode] = useState(appliedCouponCode);
   const [feedback, setFeedback] = useState("");
-  const [availableCoupons, setAvailableCoupons] = useState(seedCoupons);
-  const applied = appliedCouponCode ? calculateCoupon(appliedCouponCode, items, shipping) : null;
-  useEffect(() => { setCode(appliedCouponCode); setAvailableCoupons(getCoupons()); }, [appliedCouponCode]);
+  const availableCoupons = useCoupons();
+  const applied = appliedCouponCode ? calculateCoupon(appliedCouponCode, items, shipping, availableCoupons) : null;
+  useEffect(() => { setCode(appliedCouponCode); }, [appliedCouponCode]);
   function submitCoupon(value = code) {
-    const result = calculateCoupon(value, items, shipping);
+    const result = calculateCoupon(value, items, shipping, availableCoupons);
     setFeedback(result.message);
     if (result.valid) applyCoupon(value);
   }

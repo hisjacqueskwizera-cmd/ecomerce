@@ -1,5 +1,5 @@
 -- Supabase Auth bootstrap and role administration for Open Shop.
--- Run this once in Supabase Dashboard > SQL Editor before opening public sign-up.
+-- Run or re-run in Supabase Dashboard > SQL Editor before opening public sign-up.
 -- Roles are stored in public.profiles, never in user-editable Auth user metadata.
 
 BEGIN;
@@ -18,6 +18,71 @@ CREATE TABLE IF NOT EXISTS public.profiles (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE IF NOT EXISTS public.seller_stores (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    owner_id UUID REFERENCES auth.users(id) ON DELETE SET NULL,
+    name TEXT NOT NULL CHECK (length(btrim(name)) BETWEEN 1 AND 120),
+    slug TEXT NOT NULL UNIQUE CHECK (slug ~ '^[a-z0-9]+(-[a-z0-9]+)*$'),
+    category TEXT NOT NULL DEFAULT '',
+    location TEXT NOT NULL DEFAULT '',
+    description TEXT NOT NULL DEFAULT '',
+    tone TEXT NOT NULL DEFAULT 'seller-blue'
+        CHECK (tone IN ('seller-blue', 'seller-sand', 'seller-coral', 'seller-lilac', 'seller-mint')),
+    status TEXT NOT NULL DEFAULT 'pending'
+        CHECK (status IN ('pending', 'active', 'suspended', 'closed')),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE OR REPLACE FUNCTION private.touch_seller_store_updated_at()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = ''
+AS $$
+BEGIN
+    NEW.updated_at := NOW();
+    RETURN NEW;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION private.touch_seller_store_updated_at() FROM PUBLIC, anon, authenticated;
+DROP TRIGGER IF EXISTS seller_stores_set_updated_at ON public.seller_stores;
+CREATE TRIGGER seller_stores_set_updated_at
+    BEFORE UPDATE ON public.seller_stores
+    FOR EACH ROW EXECUTE FUNCTION private.touch_seller_store_updated_at();
+
+ALTER TABLE public.seller_stores ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE public.seller_stores FROM PUBLIC, anon, authenticated;
+GRANT SELECT (id, name, slug, category, location, description, tone, status)
+    ON TABLE public.seller_stores TO anon;
+GRANT SELECT ON TABLE public.seller_stores TO authenticated;
+GRANT INSERT, UPDATE, DELETE ON TABLE public.seller_stores TO authenticated;
+
+-- Import the storefront's existing demo stores once so they can be managed here.
+INSERT INTO public.seller_stores (name, slug, category, location, description, tone, status)
+VALUES
+    ('Northstar Goods', 'northstar-goods', 'Style for the everyday', 'Gasabo District, City of Kigali', 'Thoughtful everyday accessories and footwear, selected for quality, comfort, and lasting value.', 'seller-blue', 'active'),
+    ('Wander & Co', 'wander-and-co', 'Bags for going places', 'Musanze District, Northern Province', 'Practical bags and travel pieces for the trips you plan and the errands you do every day.', 'seller-sand', 'active'),
+    ('Thread Theory', 'thread-theory', 'Easy-to-wear clothing', 'Nyarugenge District, City of Kigali', 'Comfortable wardrobe staples in breathable fabrics and relaxed, wearable cuts.', 'seller-coral', 'active'),
+    ('Clay House Studio', 'clay-house-studio', 'Hand-finished homewares', 'Huye District, Southern Province', 'Small-batch ceramics and home accents made to bring a little warmth to your space.', 'seller-lilac', 'active'),
+    ('Bright Audio', 'bright-audio', 'Sound for every day', 'Rubavu District, Western Province', 'Useful audio gear with dependable sound for work, play, and everything between.', 'seller-mint', 'active'),
+    ('Kigali Property Hub', 'kigali-property-hub', 'Homes, land, and commercial listings', 'Gasabo District, City of Kigali', 'A Kigali based property marketplace for homes, plots, rentals, and commercial listings across Rwanda.', 'seller-blue', 'active'),
+    ('Imbuto Hardware & Building', 'imbuto-hardware-and-building', 'Quincaillerie and building materials', 'Nyarugenge District, City of Kigali', 'Construction supplies, tools, plumbing, and finishing materials for home projects and building sites.', 'seller-sand', 'active'),
+    ('Isoko Fresh Foods', 'isoko-fresh-foods', 'Local groceries and pantry goods', 'Kicukiro District, City of Kigali', 'Fresh produce and pantry staples sourced from Rwanda growers and local food makers.', 'seller-mint', 'active'),
+    ('Mera Home & Living', 'mera-home-and-living', 'Furniture and home appliances', 'Gasabo District, City of Kigali', 'Useful home furnishings and appliances, with delivery arrangements available across Rwanda.', 'seller-lilac', 'active'),
+    ('Afya & Beauty', 'afya-and-beauty', 'Personal care and beauty', 'Nyarugenge District, City of Kigali', 'Everyday personal care, locally made body products, and selected beauty essentials.', 'seller-coral', 'active'),
+    ('Little Steps Rwanda', 'little-steps-rwanda', 'Baby, children, and learning', 'Gasabo District, City of Kigali', 'Comfortable children''s clothing, toys, and practical essentials for growing families.', 'seller-sand', 'active'),
+    ('OfficePlus Kigali', 'officeplus-kigali', 'Books, stationery, and office', 'Gasabo District, City of Kigali', 'Stationery, study essentials, and practical equipment for home and office.', 'seller-blue', 'active'),
+    ('Rwanda Auto Parts', 'rwanda-auto-parts', 'Vehicle parts and accessories', 'Kicukiro District, City of Kigali', 'Vehicle maintenance products and parts. Confirm fitment and specifications before purchase.', 'seller-coral', 'active'),
+    ('Kivu Outdoor', 'kivu-outdoor', 'Sport and outdoor gear', 'Rubavu District, Western Province', 'Practical gear for exercise, cycling, hiking, and exploring Rwanda outdoors.', 'seller-mint', 'active'),
+    ('Umurava Farm Supply', 'umurava-farm-supply', 'Agricultural tools and inputs', 'Rwamagana District, Eastern Province', 'Seeds, irrigation supplies, and farm essentials for growers and small agricultural businesses.', 'seller-sand', 'active'),
+    ('Akazi Crafts Collective', 'akazi-crafts', 'Handmade crafts and gifts', 'Nyarugenge District, City of Kigali', 'Handmade woven baskets, locally crafted gifts, and decorative pieces from Rwanda artisans.', 'seller-lilac', 'active'),
+    ('Green Hills Organics', 'green-hills-organics', 'Fresh produce and pantry goods', 'Musanze District, Northern Province', 'Seasonal produce, herbs, and pantry goods sourced from smallholder farms.', 'seller-mint', 'active'),
+    ('Ubumwe Cycle Works', 'ubumwe-cycle-works', 'Bicycles and cycle repairs', 'Gasabo District, City of Kigali', 'Bicycles, repair parts, and practical accessories for commuting and weekend rides.', 'seller-blue', 'active'),
+    ('Umucyo Stationery', 'umucyo-stationery', 'School and office supplies', 'Huye District, Southern Province', 'School supplies, paper goods, art materials, and practical office essentials.', 'seller-sand', 'active'),
+    ('Lakeview Kitchen & Table', 'lakeview-kitchen-table', 'Kitchen and tableware', 'Rubavu District, Western Province', 'Kitchen tools, tableware, and thoughtful essentials for everyday cooking and hosting.', 'seller-coral', 'active')
+ON CONFLICT (slug) DO NOTHING;
 
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON TABLE public.profiles FROM anon, authenticated;
@@ -132,6 +197,32 @@ $$;
 
 REVOKE ALL ON FUNCTION private.current_user_is_super_admin() FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION private.current_user_is_super_admin() TO authenticated;
+
+DROP POLICY IF EXISTS "Public read active seller stores" ON public.seller_stores;
+CREATE POLICY "Public read active seller stores"
+    ON public.seller_stores FOR SELECT TO anon, authenticated
+    USING (status = 'active');
+
+DROP POLICY IF EXISTS "Super admins read all seller stores" ON public.seller_stores;
+CREATE POLICY "Super admins read all seller stores"
+    ON public.seller_stores FOR SELECT TO authenticated
+    USING ((SELECT private.current_user_is_super_admin()));
+
+DROP POLICY IF EXISTS "Super admins create seller stores" ON public.seller_stores;
+CREATE POLICY "Super admins create seller stores"
+    ON public.seller_stores FOR INSERT TO authenticated
+    WITH CHECK ((SELECT private.current_user_is_super_admin()));
+
+DROP POLICY IF EXISTS "Super admins update seller stores" ON public.seller_stores;
+CREATE POLICY "Super admins update seller stores"
+    ON public.seller_stores FOR UPDATE TO authenticated
+    USING ((SELECT private.current_user_is_super_admin()))
+    WITH CHECK ((SELECT private.current_user_is_super_admin()));
+
+DROP POLICY IF EXISTS "Super admins delete seller stores" ON public.seller_stores;
+CREATE POLICY "Super admins delete seller stores"
+    ON public.seller_stores FOR DELETE TO authenticated
+    USING ((SELECT private.current_user_is_super_admin()));
 
 CREATE OR REPLACE FUNCTION public.admin_list_users()
 RETURNS TABLE (
