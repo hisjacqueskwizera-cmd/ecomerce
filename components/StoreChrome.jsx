@@ -39,7 +39,7 @@ export function StoreHeader() {
       <Link className="amazon-wordmark" href="/" aria-label="Open Shop home"><span className="amazon-logo-mark">O</span><span>Open Shop<small>{config.chrome.tagline}</small></span></Link>
       <label className="amazon-location"><span className="location-pin" aria-hidden="true">⌖</span><span><small>Deliver to</small><b>{district || "Rwanda"}</b></span><select value={district} onChange={selectDistrict} aria-label="Select delivery district"><option value="">All Rwanda</option><DistrictOptions/></select></label>
       <form className="amazon-search" onSubmit={search}><select aria-label="Search category" value={category} onChange={event => setCategory(event.target.value)}><option value="">All departments</option>{categories.map(item => <option key={item}>{item}</option>)}</select><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search products, stores and categories" aria-label="Search products"/><button aria-label="Search">Search</button></form>
-      <Link className="amazon-account" href="/account"><small>Hello, sign in</small><b>Account &amp; Lists</b></Link>
+      <Link className="amazon-account" href="/login"><small>Hello, sign in</small><b>Account &amp; Lists</b></Link>
       <Link className="amazon-orders" href="/account"><small>Returns</small><b>&amp; Orders</b></Link>
       <Link className="amazon-saved" href="/wishlist"><span aria-hidden="true">♡</span><b>Saved</b><i>{wishlist.length}</i></Link>
       <Link className="amazon-cart" href="/cart" aria-label={`Cart, ${cartCount} items`}><span className="cart-icon" aria-hidden="true">Cart<i>{cartCount}</i></span><b>Cart</b><small>{money(subtotal)}</small></Link>

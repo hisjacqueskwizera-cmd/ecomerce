@@ -29,8 +29,10 @@ The current released adapter does not yet inline Next.js 16.4's `preview-props.j
 - Open Shop admin console at `/admin`, with catalog editing, local demo order status management, seller enquiries, customer summaries, and RWF analytics styled from the TailwindAdmin template.
 - Coupon management at `/admin/coupons`, with percentage, fixed amount, and free delivery offers, minimum spend, maximum discount, expiry, category targeting, and activation controls. Seed codes include `KARIBU10`, `OPEN5000`, `FREESHIP`, `QUINCA10`, `ISOKO5`, and `HOME15`.
 
-## Demo data and production services
+## Supabase accounts and remaining demo data
 
-All displayed prices use Rwandan francs (RWF). Catalog and seller seed data live in `lib/catalog.js`. Cart, wishlist, account details, orders, product edits, and seller enquiries use browser `localStorage` so the storefront and admin flow can be explored without a server account. Admin changes and analytics are local to the current browser. Checkout is a demo: it does not collect payment, create server-side orders, or notify sellers. A live store still needs a database, authentication, inventory and order APIs, transactional email, and a payment provider before accepting real orders.
+Email/password signup and login use Supabase Auth. Profiles and role assignments are protected by database policies, and `/admin` is restricted to Super admins. The first signup is Super admin, the second is Seller, and later signups are Clients. Run the SQL and URL callback setup in [database/supabase-setup.md](database/supabase-setup.md) before enabling signup on a live site.
+
+All displayed prices use Rwandan francs (RWF). Catalog and seller seed data live in `lib/catalog.js`. Cart, wishlist, orders, product edits, coupons, banners, storefront settings, and seller enquiries still use browser `localStorage`. Checkout is a demo: it does not collect payment, create database orders, or notify sellers. The remaining marketplace data and workflows need migration to Supabase before they are shared between browsers or used for real sales.
 
 The theme archive includes a screenshot with the shoe banner but no separate product photo library. The banner and sneaker listing reuse crops from that theme screenshot; other marketplace items use local SVG illustrations or category symbols.
