@@ -5,7 +5,13 @@ export async function GET(request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const next = searchParams.get("next");
-  const safeNext = next && next.startsWith("/") && !next.startsWith("//") ? next : "/account";
+  let safeNext = "/account";
+  if (next) {
+    try {
+      const target = new URL(next, origin);
+      if (target.origin === origin) safeNext = `${target.pathname}${target.search}${target.hash}`;
+    } catch { /* Keep the account page as the safe default. */ }
+  }
 
   if (code) {
     const supabase = await createSupabaseServerClient();

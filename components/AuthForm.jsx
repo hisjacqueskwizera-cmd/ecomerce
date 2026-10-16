@@ -4,10 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "../lib/supabase/client";
 
-export default function AuthForm({ mode, next = "/account" }) {
+export default function AuthForm({ mode, next = "/account", initialMessage = "" }) {
   const router = useRouter();
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(initialMessage);
   const [busy, setBusy] = useState(false);
   const signingUp = mode === "signup";
 
@@ -41,9 +41,16 @@ export default function AuthForm({ mode, next = "/account" }) {
           setMessage("Check your email for a confirmation link. Your account role is assigned when registration is created.");
         }
       } else {
-        const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
         if (signInError) throw signInError;
-        const safeNext = typeof next === "string" && next.startsWith("/") && !next.startsWith("//") ? next : "/account";
+        if (!data.session) throw new Error("Sign in did not create a session. Please try again.");
+        let safeNext = "/account";
+        if (typeof next === "string") {
+          try {
+            const target = new URL(next, window.location.origin);
+            if (target.origin === window.location.origin) safeNext = `${target.pathname}${target.search}${target.hash}`;
+          } catch { /* Keep the account page as the safe default. */ }
+        }
         router.replace(safeNext);
         router.refresh();
       }
