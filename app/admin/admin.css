@@ -40,3 +40,17 @@
 .admin-banner-size-guide>b{width:100%;color:#26344c;font-size:11px}
 .admin-banner-size-guide>span{font-weight:600;color:#2196F3}
 .admin-banner-size-guide>small{width:100%;color:#8995a9;font-size:9px}
+
+.admin-kpi-link{display:inline-block;margin-top:7px;color:#1687e0;font-size:10px;font-weight:600}
+.admin-period-toolbar{align-items:center;gap:9px;margin:0 0 16px;padding:10px 12px;border:1px solid var(--adm-line);border-radius:7px;background:#fff}
+.admin-period-toolbar label{color:#68758b;font-size:10px;font-weight:600}
+.admin-period-toolbar select,.admin-period-toolbar input{height:34px;min-width:120px;padding:0 9px;border:1px solid #e0e6ef;border-radius:5px;background:#fff;color:#344158;font:inherit;font-size:10px}
+.admin-period-toolbar input[type=date]{min-width:135px}
+.admin-period-toolbar .admin-secondary{height:34px;padding:0 12px;border:1px solid #d8e1ee;border-radius:5px;background:#fff;color:#43526a;font-size:10px;cursor:pointer}
+.admin-period-toolbar .admin-count{margin-left:auto}
+.admin-data-error{display:grid;gap:4px;margin:0 0 14px;padding:12px 14px;border:1px solid #f0d6a9;border-radius:7px;background:#fffaf0;color:#7a5822;font-size:11px}
+.admin-data-error span{color:#8c7652}
+.admin-vendor-kpis{margin-top:12px}
+.admin-unsupported-metrics{margin-top:16px;padding:0 17px 12px}
+.admin-unsupported-metrics>p{margin:0 0 8px;color:#77849b;font-size:11px;line-height:1.6}
+@media(max-width:760px){.admin-period-toolbar{align-items:stretch}.admin-period-toolbar label{align-self:end}.admin-period-toolbar select,.admin-period-toolbar input{flex:1;min-width:calc(50% - 8px)}.admin-period-toolbar .admin-count{width:100%;margin:0}}

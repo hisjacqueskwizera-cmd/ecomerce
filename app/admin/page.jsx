@@ -1,51 +1,145 @@
-"use client";
-
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { money, categories } from "../../lib/catalog";
-import { ADMIN_ORDERS_KEY, readStored } from "../../lib/admin-data";
-import { useCatalogProducts } from "../../components/useCatalogProducts";
+import { createSupabaseServerClient } from "../../lib/supabase/server";
 
-function SalesChart({ orders }) {
-  const points = useMemo(() => {
-    const now = new Date();
-    return Array.from({ length: 6 }, (_, index) => {
-      const date = new Date(now.getFullYear(), now.getMonth() - 5 + index, 1);
-      const total = orders.filter(order => { const placed = new Date(order.placedAt); return placed.getFullYear() === date.getFullYear() && placed.getMonth() === date.getMonth() && order.status !== "Cancelled"; }).reduce((sum, order) => sum + Number(order.total || 0), 0);
-      return { label: date.toLocaleDateString("en", { month: "short" }), total };
-    });
-  }, [orders]);
-  if (!orders.length) return <div className="admin-chart-empty"><div><b>No order activity yet</b>New orders from this browser will appear here.</div></div>;
-  const max = Math.max(...points.map(point => point.total), 1);
-  const coords = points.map((point, index) => `${26 + index * 67},${156 - (point.total / max) * 122}`).join(" ");
-  const area = `M ${coords.split(" ").join(" L ")} L 361,164 L 26,164 Z`;
-  return <div className="admin-sales-chart"><svg viewBox="0 0 390 180" preserveAspectRatio="none" aria-label="Revenue over the last six months"><defs><linearGradient id="adminChartFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#5d87ff" stopOpacity=".2"/><stop offset="1" stopColor="#5d87ff" stopOpacity="0"/></linearGradient></defs>{[34,75,116,157].map(y => <line key={y} className="admin-chart-grid" x1="20" y1={y} x2="370" y2={y}/>)}<path className="admin-chart-area" d={area}/><polyline className="admin-chart-line" points={coords}/>{points.map((point, index) => <g key={point.label}><circle className="admin-chart-dot" cx={26 + index * 67} cy={156 - (point.total / max) * 122} r="4"/><text className="admin-chart-label" x={26 + index * 67} y="177" textAnchor="middle">{point.label}</text></g>)}</svg></div>;
+const ranges = [
+  ["today", "Today"],
+  ["7d", "Last 7 days"],
+  ["30d", "Last 30 days"],
+  ["month", "This month"],
+  ["custom", "Custom range"],
+];
+
+function dayStart(value) {
+  return new Date(`${value}T00:00:00.000Z`);
 }
 
-export default function AdminDashboard() {
-  const [orders, setOrders] = useState([]);
-  const adminProducts = useCatalogProducts();
-  useEffect(() => { setOrders(readStored(ADMIN_ORDERS_KEY, [])); }, []);
-  const revenue = orders.filter(order => order.status !== "Cancelled").reduce((sum, order) => sum + Number(order.total || 0), 0);
-  const customers = new Set(orders.map(order => order.email).filter(Boolean)).size;
-  const stock = adminProducts.reduce((sum, product) => sum + Number(product.stock || 0), 0);
-  const latest = [...orders].sort((a,b) => new Date(b.placedAt) - new Date(a.placedAt)).slice(0, 5);
-  const categoryCounts = categories.map(category => ({ category, count: adminProducts.filter(product => product.category === category).length })).filter(item => item.count).sort((a,b) => b.count-a.count).slice(0, 4);
+function isoDay(value) {
+  return value.toISOString().slice(0, 10);
+}
+
+function validDay(value) {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const parsed = dayStart(value);
+  return Number.isFinite(parsed.valueOf()) && isoDay(parsed) === value;
+}
+
+function getPeriod(params) {
+  const today = new Date();
+  const todayKey = isoDay(today);
+  const selected = ranges.some(([key]) => key === params.range) ? params.range : "30d";
+  let from;
+  let to = todayKey;
+
+  if (selected === "custom" && validDay(params.from) && validDay(params.to) && params.from <= params.to) {
+    from = params.from;
+    to = params.to;
+  } else if (selected === "today") {
+    from = todayKey;
+  } else if (selected === "7d") {
+    const start = new Date(today);
+    start.setUTCDate(start.getUTCDate() - 6);
+    from = isoDay(start);
+  } else if (selected === "month") {
+    from = isoDay(new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1)));
+  } else {
+    const start = new Date(today);
+    start.setUTCDate(start.getUTCDate() - 29);
+    from = isoDay(start);
+  }
+
+  return { selected, from, to, nextDay: isoDay(new Date(dayStart(to).valueOf() + 86400000)) };
+}
+
+async function exactCount(supabase, table, filters = []) {
+  let query = supabase.from(table).select("id", { count: "exact", head: true });
+  for (const [method, column, value] of filters) query = query[method](column, value);
+  return query;
+}
+
+function CountCard({ title, count, detail, href, error }) {
+  return <article className="admin-card admin-kpi">
+    <div className="admin-kpi-top"><span>{title}</span><span className="admin-kpi-icon">{error ? "!" : "#"}</span></div>
+    <strong>{error ? "Unavailable" : Number(count || 0).toLocaleString("en-RW")}</strong>
+    <small>{error ? "Could not read this table" : detail}</small>
+    {href && <Link className="admin-kpi-link" href={href}>Manage</Link>}
+  </article>;
+}
+
+export default async function AdminDashboard({ searchParams }) {
+  const params = await searchParams;
+  const period = getPeriod(params || {});
+  const supabase = await createSupabaseServerClient();
+
+  const [products, activeProducts, lowStock, outOfStock, stores, activeStores, pendingStores, newProducts, newStores, recentProducts, recentStores] = await Promise.all([
+    exactCount(supabase, "catalog_products"),
+    exactCount(supabase, "catalog_products", [["eq", "active", true]]),
+    exactCount(supabase, "catalog_products", [["gt", "stock", 0], ["lte", "stock", 5]]),
+    exactCount(supabase, "catalog_products", [["eq", "stock", 0]]),
+    exactCount(supabase, "seller_stores"),
+    exactCount(supabase, "seller_stores", [["eq", "status", "active"]]),
+    exactCount(supabase, "seller_stores", [["eq", "status", "pending"]]),
+    exactCount(supabase, "catalog_products", [["gte", "created_at", `${period.from}T00:00:00.000Z`], ["lt", "created_at", `${period.nextDay}T00:00:00.000Z`]]),
+    exactCount(supabase, "seller_stores", [["gte", "created_at", `${period.from}T00:00:00.000Z`], ["lt", "created_at", `${period.nextDay}T00:00:00.000Z`]]),
+    supabase.from("catalog_products").select("id,name,slug,seller,category,stock,active,created_at").order("created_at", { ascending: false }).limit(6),
+    supabase.from("seller_stores").select("id,name,slug,status,location,created_at").order("created_at", { ascending: false }).limit(6),
+  ]);
+
+  const results = [products, activeProducts, lowStock, outOfStock, stores, activeStores, pendingStores, newProducts, newStores, recentProducts, recentStores];
+  const errors = results.filter(result => result.error).map(result => result.error);
+  const rangeLabel = ranges.find(([key]) => key === period.selected)?.[1] || "Last 30 days";
 
   return <>
-    <div className="admin-page-heading"><div><h1>Marketplace overview</h1><p>Monitor Open Shop sales, products, sellers, and customers.</p></div><Link className="admin-primary" href="/">↗ <span>View storefront</span></Link></div>
-    <section className="admin-kpis">
-      <article className="admin-card admin-kpi"><div className="admin-kpi-top"><span>Total revenue</span><span className="admin-kpi-icon">R</span></div><strong>{money(revenue)}</strong><small>{orders.length ? `${orders.length} orders in this browser` : "Revenue from placed orders"}</small></article>
-      <article className="admin-card admin-kpi"><div className="admin-kpi-top"><span>Total orders</span><span className="admin-kpi-icon">▤</span></div><strong>{orders.length.toLocaleString("en-RW")}</strong><small>{orders.filter(order => order.status === "Pending").length} need attention</small></article>
-      <article className="admin-card admin-kpi"><div className="admin-kpi-top"><span>Products listed</span><span className="admin-kpi-icon">◇</span></div><strong>{adminProducts.length}</strong><small>{stock} units in sample inventory</small></article>
-      <article className="admin-card admin-kpi"><div className="admin-kpi-top"><span>Customers</span><span className="admin-kpi-icon">♧</span></div><strong>{customers}</strong><small>Unique customer emails</small></article>
+    <div className="admin-page-heading">
+      <div><h1>Marketplace overview</h1><p>Live inventory and vendor status from the marketplace database.</p></div>
+      <Link className="admin-primary" href="/">View storefront</Link>
+    </div>
+
+    <form className="admin-toolbar admin-period-toolbar" action="/admin">
+      <label htmlFor="admin-period">New records</label>
+      <select id="admin-period" name="range" defaultValue={period.selected}>
+        {ranges.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+      </select>
+      <label htmlFor="admin-from">From</label>
+      <input id="admin-from" name="from" type="date" defaultValue={period.from} />
+      <label htmlFor="admin-to">To</label>
+      <input id="admin-to" name="to" type="date" defaultValue={period.to} />
+      <button className="admin-secondary" type="submit">Apply</button>
+      <span className="admin-count">{period.from} to {period.to}</span>
+    </form>
+
+    {errors.length > 0 && <div className="admin-data-error" role="alert">
+      <strong>Some marketplace data could not be loaded.</strong>
+      <span>Check that the Supabase marketplace setup has been applied and that its admin policies are active.</span>
+    </div>}
+
+    <section className="admin-kpis" aria-label="Marketplace inventory">
+      <CountCard title="Products" count={products.count} detail="All catalog listings" href="/admin/products" error={products.error} />
+      <CountCard title="Published products" count={activeProducts.count} detail="Visible in the storefront" href="/admin/products" error={activeProducts.error} />
+      <CountCard title="Low stock" count={lowStock.count} detail="Between 1 and 5 units" href="/admin/products" error={lowStock.error} />
+      <CountCard title="Out of stock" count={outOfStock.count} detail="Listings with zero units" href="/admin/products" error={outOfStock.error} />
+    </section>
+
+    <section className="admin-kpis admin-vendor-kpis" aria-label="Vendor stores">
+      <CountCard title="Vendor stores" count={stores.count} detail="All registered storefronts" href="/admin/vendors" error={stores.error} />
+      <CountCard title="Active stores" count={activeStores.count} detail="Currently active" href="/admin/vendors" error={activeStores.error} />
+      <CountCard title="Applications to review" count={pendingStores.count} detail="Stores with pending status" href="/admin/vendors" error={pendingStores.error} />
+      <article className="admin-card admin-kpi"><div className="admin-kpi-top"><span>New in {rangeLabel.toLowerCase()}</span><span className="admin-kpi-icon">+</span></div><strong>{newProducts.error || newStores.error ? "Unavailable" : `${Number(newProducts.count || 0)} / ${Number(newStores.count || 0)}`}</strong><small>Products / stores created in this period</small></article>
     </section>
 
     <section className="admin-dashboard-grid">
-      <article className="admin-card admin-sales-card"><div className="admin-card-title"><div><h2>Sales overview</h2><p>Order revenue over the last six months</p></div><span className="admin-status shipped">RWF</span></div><div className="admin-sales-stats"><span>Revenue<b>{money(revenue)}</b></span><span>Orders<b>{orders.length}</b></span><span>Average order<b>{money(orders.length ? revenue / orders.length : 0)}</b></span></div><SalesChart orders={orders}/><div className="admin-chart-legend"><span><i/> Order revenue · RWF</span></div></article>
-      <article className="admin-card"><div className="admin-card-title"><div><h2>Catalog snapshot</h2><p>Products by category</p></div><Link href="/admin/products">Manage</Link></div><div className="admin-breakdown">{categoryCounts.length ? categoryCounts.map((item, index) => <div className="admin-breakdown-row" key={item.category}><span className="admin-breakdown-icon">{["◇","◈","▱","◉"][index]}</span><span className="admin-breakdown-info"><b>{item.category}</b><small>{item.count} active products</small></span><strong>{Math.round(item.count / adminProducts.length * 100)}%</strong></div>) : <div className="admin-empty">No products in this category.</div>}<Link className="admin-breakdown-link" href="/admin/products">View all products →</Link></div></article>
+      <article className="admin-card">
+        <div className="admin-card-title"><div><h2>Recent products</h2><p>Latest records in the shared catalog</p></div><Link href="/admin/products">Manage products</Link></div>
+        {recentProducts.error ? <div className="admin-empty">Product records are unavailable. Check the Supabase table and access policies.</div> : recentProducts.data?.length ? <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>PRODUCT</th><th>STORE</th><th>CATEGORY</th><th>STOCK</th><th>STATUS</th></tr></thead><tbody>{recentProducts.data.map(product => <tr key={product.id}><td><strong>{product.name}</strong><small className="admin-order-items">{product.slug}</small></td><td>{product.seller}</td><td>{product.category}</td><td>{product.stock}</td><td><span className={`admin-status ${product.active ? "shipped" : "cancelled"}`}>{product.active ? "Published" : "Hidden"}</span></td></tr>)}</tbody></table></div> : <div className="admin-empty">No product records are in the shared catalog yet.</div>}
+      </article>
+      <article className="admin-card">
+        <div className="admin-card-title"><div><h2>Recent vendor stores</h2><p>Latest store registrations and their review status</p></div><Link href="/admin/vendors">Manage vendors</Link></div>
+        {recentStores.error ? <div className="admin-empty">Vendor records are unavailable. Check the Supabase table and access policies.</div> : recentStores.data?.length ? <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>STORE</th><th>LOCATION</th><th>STATUS</th><th>CREATED</th></tr></thead><tbody>{recentStores.data.map(store => <tr key={store.id}><td><strong>{store.name}</strong><small className="admin-order-items">/{store.slug}</small></td><td>{store.location || "—"}</td><td><span className={`admin-status ${(store.status || "pending").toLowerCase()}`}>{store.status}</span></td><td><time dateTime={store.created_at}>{String(store.created_at || "").slice(0, 10) || "—"}</time></td></tr>)}</tbody></table></div> : <div className="admin-empty">No vendor stores are in the shared database yet.</div>}
+      </article>
     </section>
 
-    <section className="admin-card"><div className="admin-card-title"><div><h2>Recent orders</h2><p>Latest orders placed from this browser</p></div><Link href="/admin/orders">View all orders →</Link></div>{latest.length ? <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>ORDER</th><th>CUSTOMER</th><th>DELIVERY DISTRICT</th><th>DATE</th><th>AMOUNT</th><th>STATUS</th></tr></thead><tbody>{latest.map(order => <tr key={order.reference}><td><strong>{order.reference}</strong></td><td>{order.name}</td><td>{order.district || "—"}</td><td>{new Date(order.placedAt).toLocaleDateString()}</td><td><strong>{money(order.total)}</strong></td><td><span className={`admin-status ${(order.status || "Pending").toLowerCase()}`}>{order.status || "Pending"}</span></td></tr>)}</tbody></table></div> : <div className="admin-empty">No orders yet. Place a demo order in the storefront to see it here.</div>}</section>
+    <section className="admin-card admin-unsupported-metrics">
+      <div className="admin-card-title"><div><h2>Orders and financial reporting</h2><p>These figures are intentionally omitted until they come from persisted marketplace transactions.</p></div></div>
+      <p>The connected Supabase marketplace schema currently has no shared orders, payment, refund, commission, payout, or audit tables. The old browser-local demo orders are not used for these production metrics.</p>
+    </section>
   </>;
 }
