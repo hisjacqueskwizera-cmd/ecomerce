@@ -2,6 +2,12 @@
 
 The app reads `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` from `.env.local`. Those names are already configured in this workspace. Keep publishable keys in the browser; never put a Supabase secret or service-role key in a `NEXT_PUBLIC_` variable.
 
+## Configure Supabase for Cloudflare
+
+Local `.env.local` values are not copied to Cloudflare. In the Cloudflare dashboard, add both `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (or the legacy `NEXT_PUBLIC_SUPABASE_ANON_KEY`) to **Workers Builds → Build variables and secrets** so Next.js can include them in the browser bundle. Add the same values to the deployed Worker under **Settings → Variables and Secrets** for request-time server code, then trigger a new deployment. These are the Supabase project URL and publishable/anon key; do not use a `service_role` or secret key.
+
+The `/admin` segment is rendered per request because it checks the signed-in user's Supabase session. The build does not need credentials to prerender that route, but the deployed application still needs the Cloudflare variables above for login, admin access, and shared marketplace data.
+
 ## Initialize auth and roles
 
 1. In the Supabase Dashboard, open **SQL Editor** for this project.
