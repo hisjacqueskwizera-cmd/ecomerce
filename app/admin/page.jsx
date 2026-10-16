@@ -120,9 +120,9 @@ export default async function AdminDashboard({ searchParams }) {
     </section>
 
     <section className="admin-kpis admin-vendor-kpis" aria-label="Vendor stores">
-      <CountCard title="Vendor stores" count={stores.count} detail="All registered storefronts" href="/admin/vendors" error={stores.error} />
-      <CountCard title="Active stores" count={activeStores.count} detail="Currently active" href="/admin/vendors" error={activeStores.error} />
-      <CountCard title="Applications to review" count={pendingStores.count} detail="Stores with pending status" href="/admin/vendors" error={pendingStores.error} />
+      <CountCard title="Vendor stores" count={stores.count} detail="All registered storefronts" href="/admin/sellers" error={stores.error} />
+      <CountCard title="Active stores" count={activeStores.count} detail="Currently active" href="/admin/sellers" error={activeStores.error} />
+      <CountCard title="Applications to review" count={pendingStores.count} detail="Stores with pending status" href="/admin/sellers" error={pendingStores.error} />
       <article className="admin-card admin-kpi"><div className="admin-kpi-top"><span>New in {rangeLabel.toLowerCase()}</span><span className="admin-kpi-icon">+</span></div><strong>{newProducts.error || newStores.error ? "Unavailable" : `${Number(newProducts.count || 0)} / ${Number(newStores.count || 0)}`}</strong><small>Products / stores created in this period</small></article>
     </section>
 
@@ -132,7 +132,7 @@ export default async function AdminDashboard({ searchParams }) {
         {recentProducts.error ? <div className="admin-empty">Product records are unavailable. Check the Supabase table and access policies.</div> : recentProducts.data?.length ? <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>PRODUCT</th><th>STORE</th><th>CATEGORY</th><th>STOCK</th><th>STATUS</th></tr></thead><tbody>{recentProducts.data.map(product => <tr key={product.id}><td><strong>{product.name}</strong><small className="admin-order-items">{product.slug}</small></td><td>{product.seller}</td><td>{product.category}</td><td>{product.stock}</td><td><span className={`admin-status ${product.active ? "shipped" : "cancelled"}`}>{product.active ? "Published" : "Hidden"}</span></td></tr>)}</tbody></table></div> : <div className="admin-empty">No product records are in the shared catalog yet.</div>}
       </article>
       <article className="admin-card">
-        <div className="admin-card-title"><div><h2>Recent vendor stores</h2><p>Latest store registrations and their review status</p></div><Link href="/admin/vendors">Manage vendors</Link></div>
+        <div className="admin-card-title"><div><h2>Recent vendor stores</h2><p>Latest store registrations and their review status</p></div><Link href="/admin/sellers">Manage sellers</Link></div>
         {recentStores.error ? <div className="admin-empty">Vendor records are unavailable. Check the Supabase table and access policies.</div> : recentStores.data?.length ? <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>STORE</th><th>LOCATION</th><th>STATUS</th><th>CREATED</th></tr></thead><tbody>{recentStores.data.map(store => <tr key={store.id}><td><strong>{store.name}</strong><small className="admin-order-items">/{store.slug}</small></td><td>{store.location || "—"}</td><td><span className={`admin-status ${(store.status || "pending").toLowerCase()}`}>{store.status}</span></td><td><time dateTime={store.created_at}>{String(store.created_at || "").slice(0, 10) || "—"}</time></td></tr>)}</tbody></table></div> : <div className="admin-empty">No vendor stores are in the shared database yet.</div>}
       </article>
     </section>

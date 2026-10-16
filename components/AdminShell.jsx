@@ -13,7 +13,7 @@ const menu = [
   { title: "Storefront", href: "/admin/storefront", icon: "▤" },
   { title: "Coupons", href: "/admin/coupons", icon: "%" },
   { title: "Orders", href: "/admin/orders", icon: "▤" },
-  { title: "Vendors", href: "/admin/vendors", icon: "♙" },
+  { title: "Sellers", href: "/admin/sellers", icon: "♙" },
   { title: "Customers", href: "/admin/customers", icon: "♧" },
   { title: "User roles", href: "/admin/users", icon: "♙" }
 ];
