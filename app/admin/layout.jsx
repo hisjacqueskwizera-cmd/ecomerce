@@ -4,6 +4,9 @@ import { redirect } from "next/navigation";
 import AdminShell from "../../components/AdminShell";
 import { createSupabaseServerClient } from "../../lib/supabase/server";
 
+// This authenticated segment must only render inside a request context.
+export const dynamic = "force-dynamic";
+
 export default async function AdminLayout({ children }) {
   // Admin access depends on the request's Supabase session. Keep this segment
   // out of build-time prerendering, where request credentials are unavailable.
