@@ -27,6 +27,7 @@ The adapter version in the lockfile includes Next.js 16.4 support and inlines th
 - Seller directory and storefront pages, seller interest form, account profile, contact form, help pages, and journal.
 - Responsive layouts for desktop and mobile.
 - Open Shop admin console at `/admin`, with catalog editing, local demo order status management, seller enquiries, customer summaries, and RWF analytics styled from the TailwindAdmin template.
+- Admin-only seller and advertising agreement generator at `/admin/agreements`; it downloads separate PDFs and does not store agreement or signature records. Complete and verify legal details, rates, and review placeholders before signing.
 - Coupon management at `/admin/coupons`, with percentage, fixed amount, and free delivery offers, minimum spend, maximum discount, expiry, category targeting, and activation controls. Seed codes include `KARIBU10`, `OPEN5000`, `FREESHIP`, `QUINCA10`, `ISOKO5`, and `HOME15`.
 
 ## Supabase accounts and remaining demo data

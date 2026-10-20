@@ -54,3 +54,36 @@
 .admin-unsupported-metrics{margin-top:16px;padding:0 17px 12px}
 .admin-unsupported-metrics>p{margin:0 0 8px;color:#77849b;font-size:11px;line-height:1.6}
 @media(max-width:760px){.admin-period-toolbar{align-items:stretch}.admin-period-toolbar label{align-self:end}.admin-period-toolbar select,.admin-period-toolbar input{flex:1;min-width:calc(50% - 8px)}.admin-period-toolbar .admin-count{width:100%;margin:0}}
+/* Agreement builder */
+.agreement-card { margin-top: 16px; }
+.agreement-intro, .agreement-callout, .agreement-review-note { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border: 1px solid #dbe7ed; border-radius: 10px; background: #f2f8fb; color: #52616b; font-size: 13px; line-height: 1.55; }
+.agreement-intro { margin: 14px 0; }
+.agreement-intro strong, .agreement-callout b { color: #17384e; white-space: nowrap; }
+.agreement-card .admin-form-grid { margin-top: 18px; }
+.agreement-subhead { grid-column: 1 / -1; margin: 10px 0 -4px; color: #18384e; font-size: 14px; }
+.agreement-plan { padding: 14px; border: 1px solid #dfe8ed; border-radius: 9px; background: #fbfcfd; }
+.agreement-plan label { display: block; color: #243b49; font-weight: 700; }
+.agreement-plan p { margin: 4px 0 14px 24px; color: #64737d; font-size: 12px; }
+.agreement-plan input, .agreement-choice input, .agreement-rate input { accent-color: #1479a8; }
+.agreement-choice { min-width: 0; margin: 0; padding: 11px 12px; border: 1px solid #e1e9ed; border-radius: 9px; color: #314651; font-size: 12px; }
+.agreement-choice legend { padding: 0 4px; color: #263f4d; font-size: 12px; font-weight: 700; }
+.agreement-choice label { display: inline-flex; gap: 5px; align-items: center; margin-right: 14px; }
+.agreement-rates { display: grid; gap: 8px; }
+.agreement-rate { display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; align-items: center; padding: 10px 12px; border: 1px solid #e1e9ed; border-radius: 8px; color: #314651; font-size: 12px; }
+.agreement-rate b { color: #18384e; }
+.agreement-rates small { color: #687983; }
+.agreement-check { grid-column: 1 / -1; display: flex; gap: 9px; align-items: flex-start; }
+.agreement-check input { flex: 0 0 auto; margin-top: 2px; }
+.agreement-callout { flex-direction: column; gap: 4px; }
+.agreement-pricing { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 8px 0; }
+.agreement-pricing > div { display: flex; justify-content: space-between; gap: 12px; padding: 12px; border-radius: 8px; background: #f4f7f8; color: #596a74; font-size: 12px; }
+.agreement-pricing strong { color: #1b3546; }
+.agreement-pricing .agreement-total { grid-column: 1 / -1; background: #eaf4f8; font-size: 14px; }
+.agreement-review-note { margin: 18px 0; border-color: #eddab1; background: #fff9ed; color: #705d36; }
+@media (max-width: 700px) {
+  .agreement-intro { flex-direction: column; }
+  .agreement-rate { grid-template-columns: 22px 1fr; }
+  .agreement-rate b { grid-column: 2; }
+  .agreement-pricing { grid-template-columns: 1fr; }
+  .agreement-pricing .agreement-total { grid-column: auto; }
+}

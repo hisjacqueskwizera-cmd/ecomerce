@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "../lib/supabase/client";
 
 const menu = [
+  { title: "Agreements", href: "/admin/agreements", icon: "OS" },
   { title: "Overview", href: "/admin", icon: "▦" },
   { title: "Products", href: "/admin/products", icon: "◇" },
   { title: "Advertising", href: "/admin/banners", icon: "▱" },
