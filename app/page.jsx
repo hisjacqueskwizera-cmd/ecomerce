@@ -1,76 +1,113 @@
 ﻿"use client";
 
 import Link from "next/link";
-import { categories, sellers } from "../lib/catalog";
-import { ProductGrid } from "../components/ProductCard";
+import { useState } from "react";
+import { categories, money, sellers } from "../lib/catalog";
+import { ProductGrid, ProductVisual } from "../components/ProductCard";
 import NewsletterSignup from "../components/NewsletterSignup";
 import { useCatalogProducts } from "../components/useCatalogProducts";
 import { useStorefrontConfig } from "../components/useStorefrontConfig";
 
-const categoryTiles = [
-  { name: "Real Estate", label: "Homes & plots", symbol: "⌂", image: "/images/catalog/kicukiro-two-bedroom-apartment.jpg" },
-  { name: "Furniture", label: "Furniture", symbol: "▤", image: "/images/catalog/wooden-dining-table.jpg" },
-  { name: "Phones & Electronics", label: "Electronics", symbol: "◈", image: "/images/catalog/wireless-earbuds.jpg" },
-  { name: "Quincaillerie & Construction", label: "Building & tools", symbol: "⚒", image: "" },
-  { name: "Home & Decor", label: "Home & decor", symbol: "✳", image: "/images/catalog/woven-cushion-cover.jpg" },
-  { name: "Food & Groceries", label: "Food & pantry", symbol: "✦", image: "" },
+const categoryVisuals = {
+  "Real Estate": { label: "Homes & plots", symbol: "⌂", image: "/images/catalog/kicukiro-two-bedroom-apartment.jpg" },
+  "Quincaillerie & Construction": { label: "Building & tools", symbol: "⚒", image: "" },
+  Accessories: { label: "Accessories", symbol: "✦", image: "/images/catalog/canvas-market-tote.jpg" },
+  Agriculture: { label: "Agriculture", symbol: "❋", image: "" },
+  Automotive: { label: "Automotive", symbol: "◉", image: "" },
+  "Baby & Kids": { label: "Baby & kids", symbol: "♡", image: "" },
+  "Books & Office": { label: "Books & office", symbol: "▤", image: "" },
+  Clothing: { label: "Clothing", symbol: "✳", image: "/images/catalog/linen-summer-shirt.jpg" },
+  Fashion: { label: "Fashion", symbol: "✳", image: "/images/catalog/everyday-sneaker.jpg" },
+  "Food & Groceries": { label: "Food & groceries", symbol: "✦", image: "" },
+  Furniture: { label: "Furniture", symbol: "▤", image: "/images/catalog/wooden-dining-table.jpg" },
+  "Health & Beauty": { label: "Health & beauty", symbol: "✿", image: "" },
+  "Home & Decor": { label: "Home & decor", symbol: "✺", image: "/images/catalog/ceramic-table-vase.jpg" },
+  "Home Appliances": { label: "Home appliances", symbol: "▯", image: "" },
+  Music: { label: "Music", symbol: "♫", image: "" },
+  "Phones & Electronics": { label: "Phones & tech", symbol: "◈", image: "/images/catalog/wireless-earbuds.jpg" },
+  Services: { label: "Services", symbol: "✦", image: "" },
+  Shoes: { label: "Shoes", symbol: "◒", image: "/images/catalog/trail-running-shoes.jpg" },
+  "Sports & Outdoors": { label: "Sports & outdoors", symbol: "⌁", image: "" },
+};
+
+const promoCards = [
+  { category: "Home & Decor", eyebrow: "MAKE IT YOURS", title: "Thoughtful details for your space", image: "/images/catalog/ceramic-table-vase.jpg" },
+  { category: "Phones & Electronics", eyebrow: "EVERYDAY TECH", title: "Useful finds, ready for every day", image: "/images/catalog/wireless-earbuds.jpg" },
+  { category: "Real Estate", eyebrow: "ROOM TO GROW", title: "Find a place to call your own", image: "/images/catalog/kicukiro-two-bedroom-apartment.jpg" },
 ];
 
-const heroTiles = [
-  { name: "Furniture", label: "Furniture & home", image: "/images/catalog/wooden-dining-table.jpg" },
-  { name: "Phones & Electronics", label: "Phones & tech", image: "/images/catalog/wireless-earbuds.jpg" },
-  { name: "Home & Decor", label: "Home & decor", image: "/images/catalog/ceramic-table-vase.jpg" },
-  { name: "Real Estate", label: "Homes & plots", image: "/images/catalog/kicukiro-two-bedroom-apartment.jpg" },
+const journalCards = [
+  { slug: "getting-to-know-the-makers", eyebrow: "THE JASHAMART EDIT", title: "Getting to know the makers behind your finds", text: "The best part of a marketplace is often the person and story behind a product.", image: "/images/catalog/rubavu-shop-space.jpg" },
+  { slug: "small-things-for-slow-mornings", eyebrow: "LITTLE MOMENTS", title: "Small things for slower mornings", text: "A few well-made everyday pieces can make the day feel more considered.", image: "/images/catalog/ceramic-table-vase.jpg" },
+  { slug: "choosing-a-gift-with-a-story", eyebrow: "GIFT NOTES", title: "Choosing a gift with a story", text: "Find something useful, personal, and made with care at an independent shop.", image: "/images/catalog/canvas-market-tote.jpg" },
 ];
 
 export default function Home() {
   const config = useStorefrontConfig();
   const sections = config.home.sections;
-  const headlineLines = config.home.heroTitle.split("\n");
   const products = useCatalogProducts();
-  const visibleCategories = categoryTiles.filter(item => categories.includes(item.name) && products.some(product => product.category === item.name));
-  const featuredProducts = [...products].sort((a, b) => b.reviews - a.reviews).slice(0, 6);
-  const featuredIds = new Set(featuredProducts.map(product => product.id));
-  const bestSellers = [...products].sort((a, b) => b.rating - a.rating).filter(product => !featuredIds.has(product.id)).slice(0, 6);
-  const newArrivals = [...products].slice(-6).reverse();
+  const [activeTab, setActiveTab] = useState("featured");
+  const [activeSlide, setActiveSlide] = useState(0);
+  const categoryCounts = categories.map(name => ({ name, count: products.filter(product => product.category === name).length, ...(categoryVisuals[name] || { label: name, symbol: "✦", image: "" }) })).filter(item => item.count > 0).sort((a, b) => b.count - a.count);
+  const departments = categoryCounts.slice(0, 6);
+  const featuredProducts = [...products].sort((a, b) => b.reviews - a.reviews || b.rating - a.rating).slice(0, 10);
+  const latestProducts = [...products].slice(-10).reverse();
+  const bestSellers = [...products].sort((a, b) => b.rating - a.rating || b.reviews - a.reviews).slice(0, 10);
+  const discountedProducts = products.filter(product => product.oldPrice && product.oldPrice > product.price).sort((a, b) => (b.oldPrice - b.price) - (a.oldPrice - a.price));
+  const dealProduct = discountedProducts[0] || featuredProducts[0];
+  const specialProducts = discountedProducts.length ? discountedProducts.slice(0, 5) : featuredProducts.slice(5, 10);
+  const productTabs = [
+    { key: "featured", label: "Featured", title: sections.popular.title, active: sections.popular.active, items: featuredProducts },
+    { key: "latest", label: "Latest", title: sections.newArrivals.title, active: sections.newArrivals.active, items: latestProducts },
+    { key: "bestsellers", label: "Bestsellers", title: sections.bestSellers.title, active: sections.bestSellers.active, items: bestSellers },
+  ].filter(tab => tab.active);
+  const selectedTab = productTabs.find(tab => tab.key === activeTab) || productTabs[0];
+  const heroSlides = [
+    { eyebrow: "RWANDA'S LOCAL MARKETPLACE", title: config.home.heroTitle.split("\n"), text: config.home.heroText, image: "/images/catalog/rubavu-shop-space.jpg", href: "/shop", cta: "Shop now" },
+    { eyebrow: "HOME & FURNITURE", title: ["Make room for", "something good."], text: "Discover furniture, decor, and thoughtful finds from independent local stores.", image: "/images/catalog/wooden-dining-table.jpg", href: "/shop?category=Furniture", cta: "Explore home" },
+    { eyebrow: "HOMES & LOCAL SPACES", title: ["Find a space", "that feels right."], text: "Browse homes, rentals, and commercial spaces listed by local sellers.", image: "/images/catalog/kicukiro-two-bedroom-apartment.jpg", href: "/shop?category=Real%20Estate", cta: "Explore properties" },
+  ];
+  const currentHero = heroSlides[activeSlide];
+  const spotlightSeller = sellers[0];
+  const discountPercent = dealProduct?.oldPrice ? Math.round((dealProduct.oldPrice - dealProduct.price) / dealProduct.oldPrice * 100) : 0;
+  const sellerNames = sellers.slice(0, 8);
 
-  return <main className="market-home-blue">
-    <div className="site-container">
-      <section className="marketplace-welcome">
-        <div className="marketplace-welcome-copy">
-          <span className="blue-eyebrow">JASHAMART · RWANDA</span>
-          <h1>{headlineLines.map((line, index) => <span key={index}>{index > 0 && <br/>}{index > 0 ? <em>{line}</em> : line}</span>)}</h1>
-          <p>{config.home.heroText}</p>
-          <div className="welcome-actions"><Link className="blue-button" href="/shop">Shop the marketplace <span aria-hidden="true">→</span></Link><Link className="welcome-secondary" href="/sell">Start selling</Link></div>
-          <div className="marketplace-hero-note"><span>✓</span> Shop trusted stores across Rwanda</div>
-        </div>
-        <div className="marketplace-hero-collage" aria-label="Explore local marketplace categories">
-          <Link className="hero-collage-card hero-collage-featured" href="/stores" aria-label="Browse local stores">
-            <img src="/images/catalog/rubavu-shop-space.jpg" alt=""/>
-            <span className="hero-collage-caption"><small>SHOP LOCAL</small><b>Find your next favorite</b></span>
-          </Link>
-          {heroTiles.map(item => <Link className="hero-collage-card hero-collage-tile" href={`/shop?category=${encodeURIComponent(item.name)}`} key={item.name} aria-label={`Shop ${item.label}`}>
-            <img src={item.image} alt=""/>
-            <span className="hero-collage-label">{item.label}</span>
-          </Link>)}
-        </div>
-      </section>
+  return <main className="market-home-shell">
+    <div className="site-container store-home-layout">
+      <aside className="store-home-sidebar" aria-label="Marketplace shortcuts">
+        {sections.departments.active && <section className="home-widget home-categories-widget"><h2 className="home-widget-title">Categories</h2><nav aria-label="Shop categories" className="home-category-list">{categoryCounts.slice(0, 10).map(item => <Link href={`/shop?category=${encodeURIComponent(item.name)}`} key={item.name}><span>{item.label}</span><small>{item.count}</small><b aria-hidden="true">›</b></Link>)}</nav><Link className="home-widget-more" href="/shop">+ More categories</Link></section>}
 
-      {sections.departments.active && <section className="blue-section category-blue-section"><div className="blue-section-heading"><div><span className="blue-eyebrow">{sections.departments.eyebrow}</span><h2>{sections.departments.title}</h2></div><Link href="/shop" className="blue-section-link">See all departments <span aria-hidden="true">→</span></Link></div><div className="blue-category-grid">{visibleCategories.map(item => { const count = products.filter(product => product.category === item.name).length; return <Link className="blue-category-card" href={`/shop?category=${encodeURIComponent(item.name)}`} key={item.name}><div className="blue-category-art">{item.image ? <img src={item.image} alt=""/> : <span>{item.symbol}</span>}</div><div className="blue-category-copy"><b>{item.label}</b><small>{count} listings</small></div><span className="blue-category-arrow" aria-hidden="true">›</span></Link>; })}</div></section>}
+        {dealProduct && <section className="home-widget home-deal-widget"><h2 className="home-widget-title">{discountPercent ? "Deal of the day" : "Today's pick"}</h2><Link href={`/product/${dealProduct.slug}`} className="home-deal-product"><span className="home-deal-photo"><ProductVisual product={dealProduct}/>{discountPercent > 0 && <small className="home-deal-discount">-{discountPercent}%</small>}</span><span className="home-deal-name">{dealProduct.name}</span><span className="home-deal-rating"><b>★★★★★</b> <small>({dealProduct.reviews})</small></span><span className="home-deal-price">{money(dealProduct.price)} {dealProduct.oldPrice && <del>{money(dealProduct.oldPrice)}</del>}</span></Link><Link className="home-widget-cta" href={`/product/${dealProduct.slug}`}>View this item <span aria-hidden="true">→</span></Link></section>}
 
-      {sections.benefits.active && <section className="market-benefits-section"><div className="market-benefits-heading"><div><span className="blue-eyebrow">A BETTER WAY TO SHOP</span><h2>Shopping made easy</h2></div><Link href="/shipping" className="blue-section-link">How it works <span aria-hidden="true">→</span></Link></div><div className="blue-benefits"><div><b>Shop with confidence</b><span>Clear prices and straightforward product details.</span></div><div><b>Find local sellers</b><span>Discover independent stores and makers.</span></div><div><b>Delivery across Rwanda</b><span>Choose a district at the top of the page.</span></div><div><b>Easy to get started</b><span>Browse, save favorites, or add to your cart.</span></div></div></section>}
+        <section className="home-widget home-service-widget"><h2 className="home-widget-title">Shopping with JashaMart</h2><Link href="/shipping"><i>↗</i><span><b>Delivery information</b><small>Districts, estimates and returns</small></span></Link><Link href="/stores"><i>⌂</i><span><b>Independent stores</b><small>Discover local sellers</small></span></Link><Link href="/faq"><i>?</i><span><b>Help &amp; FAQs</b><small>Answers before you shop</small></span></Link></section>
 
-      {sections.promotions.active && <section className="market-story-band"><div className="market-story-copy"><span className="blue-eyebrow">{sections.promotions.eyebrow}</span><h2>{sections.promotions.title}</h2><p>{sections.promotions.text}</p><Link className="market-story-link" href="/shop?sort=popular">Explore the marketplace <span aria-hidden="true">→</span></Link></div><div className="market-story-image"><img src="/images/catalog/rubavu-shop-space.jpg" alt="A welcoming independent home and decor shop"/></div></section>}
+        {spotlightSeller && <section className="home-widget home-spotlight-widget"><h2 className="home-widget-title">Store spotlight</h2><Link href={`/stores/${spotlightSeller.slug}`} className="home-spotlight-card"><span className={`home-spotlight-mark ${spotlightSeller.tone}`}>{spotlightSeller.mark}</span><b>{spotlightSeller.name}</b><small>{spotlightSeller.category} · {spotlightSeller.location.split(",")[0]}</small><span className="home-spotlight-link">Visit this store →</span></Link></section>}
 
-      {sections.popular.active && <section className="blue-section listings-section"><div className="blue-section-heading"><div><span className="blue-eyebrow">POPULAR RIGHT NOW</span><h2>{sections.popular.title}</h2></div><Link href="/shop?sort=popular" className="blue-section-link">See all products <span aria-hidden="true">→</span></Link></div><div className="listing-status-row"><span><i className="status-blue"/> Local sellers</span><span><i/> Clear prices in RWF</span><span><i/> Delivery across Rwanda</span><b>{products.length} products</b></div><ProductGrid items={featuredProducts}/></section>}
+        {sections.promotions.active && <section className="home-widget home-side-promo"><img src="/images/catalog/two-seat-sofa.jpg" alt="A locally listed living-room sofa"/><div><span>{sections.promotions.eyebrow}</span><h2>{sections.promotions.title}</h2><p>{sections.promotions.text}</p><Link href="/shop?sort=popular">Explore offers →</Link></div></section>}
 
-      {sections.bestSellers.active && <section className="blue-section listings-section"><div className="blue-section-heading"><div><span className="blue-eyebrow">CUSTOMER FAVORITES</span><h2>{sections.bestSellers.title}</h2></div><Link href="/shop?sort=popular" className="blue-section-link">View best sellers <span aria-hidden="true">→</span></Link></div><ProductGrid items={bestSellers}/></section>}
+        {sections.newsletter.active && <section className="home-widget home-sidebar-newsletter"><h2 className="home-widget-title">Newsletter</h2><p>{config.chrome.newsletterText}</p><NewsletterSignup/></section>}
+      </aside>
 
-      {sections.newArrivals.active && <section className="blue-section listings-section"><div className="blue-section-heading"><div><span className="blue-eyebrow">{sections.newArrivals.eyebrow}</span><h2>{sections.newArrivals.title}</h2></div><Link href="/shop?sort=newest" className="blue-section-link">Browse arrivals <span aria-hidden="true">→</span></Link></div><ProductGrid items={newArrivals}/></section>}
+      <div className="store-home-main">
+        <section className="store-hero-carousel" aria-label="Marketplace highlights">
+          <img className="store-hero-image" src={currentHero.image} alt=""/>
+          <div className="store-hero-overlay"/>
+          <div className="store-hero-content" aria-live="polite"><span>{currentHero.eyebrow}</span><h1>{currentHero.title.map((line, index) => <span key={`${activeSlide}-${index}`}>{index > 0 && <br/>}{line}</span>)}</h1><p>{currentHero.text}</p><Link className="store-hero-cta" href={currentHero.href}>{currentHero.cta} <span aria-hidden="true">→</span></Link></div>
+          <div className="store-hero-controls"><button onClick={() => setActiveSlide(value => (value + heroSlides.length - 1) % heroSlides.length)} aria-label="Previous highlight">‹</button><div>{heroSlides.map((slide, index) => <button key={slide.eyebrow} className={activeSlide === index ? "active" : ""} onClick={() => setActiveSlide(index)} aria-label={`Show highlight ${index + 1}`}/>)}</div><button onClick={() => setActiveSlide(value => (value + 1) % heroSlides.length)} aria-label="Next highlight">›</button></div>
+        </section>
 
-      {sections.stores.active && <section className="blue-section sellers-blue-section"><div className="blue-section-heading"><div><span className="blue-eyebrow">PEOPLE BEHIND THE PRODUCTS</span><h2>{sections.stores.title}</h2></div><Link href="/stores" className="blue-section-link">All stores <span aria-hidden="true">→</span></Link></div><div className="blue-seller-grid">{sellers.slice(0, 6).map((seller, index) => <Link className="blue-seller-card" href={`/stores/${seller.slug}`} key={seller.slug}><span className="blue-seller-number">0{index + 1}</span><span className={`blue-seller-mark ${seller.tone}`}>{seller.mark}</span><span className="blue-seller-info"><b>{seller.name}</b><small>{seller.category}</small><em>{seller.location.split(",")[0]}</em></span><span className="blue-seller-arrow" aria-hidden="true">↗</span></Link>)}</div></section>}
+        {sections.departments.active && <section className="store-home-departments"><div className="home-section-head"><div><span>FIND YOUR NEXT FAVORITE</span><h2>Shop by category</h2></div><Link href="/shop">All departments →</Link></div><div className="home-category-circles">{departments.map(item => <Link href={`/shop?category=${encodeURIComponent(item.name)}`} className="home-category-circle" key={item.name}><span className="home-category-circle-art">{item.image ? <img src={item.image} alt=""/> : <b>{item.symbol}</b>}</span><span>{item.label}</span></Link>)}</div></section>}
 
-      {sections.newsletter.active && <section className="home-newsletter blue-newsletter"><div><span className="blue-eyebrow">THE JASHAMART EDIT</span><h2>{config.chrome.newsletterTitle}</h2><p>{config.chrome.newsletterText}</p></div><NewsletterSignup/></section>}
+        {productTabs.length > 0 && <section className="store-home-products"><div className="home-section-head home-products-head"><div><span>GOOD FINDS FROM LOCAL STORES</span><h2>{selectedTab?.title || "Products for you"}</h2></div><Link href="/shop">Shop all products →</Link></div><div className="home-product-tabs" role="tablist" aria-label="Product collections">{productTabs.map(tab => <button key={tab.key} role="tab" aria-selected={(selectedTab?.key || "") === tab.key} className={(selectedTab?.key || "") === tab.key ? "active" : ""} onClick={() => setActiveTab(tab.key)}>{tab.label}</button>)}</div><ProductGrid items={selectedTab?.items || []}/></section>}
+
+        {sections.promotions.active && <section className="home-promo-grid" aria-label="Explore more from JashaMart">{promoCards.map(card => <Link href={`/shop?category=${encodeURIComponent(card.category)}`} className="home-promo-card" key={card.category}><img src={card.image} alt=""/><span className="home-promo-shade"/><span className="home-promo-copy"><small>{card.eyebrow}</small><b>{card.title}</b><i>Shop now →</i></span></Link>)}</section>}
+
+        {sections.newArrivals.active && <section className="store-home-special-products"><div className="home-section-head"><div><span>{discountedProducts.length ? "CURRENT OFFERS" : "JUST ADDED TO THE MARKETPLACE"}</span><h2>{discountedProducts.length ? "Special products" : sections.newArrivals.title}</h2></div><Link href={discountedProducts.length ? "/shop?sort=popular" : "/shop?sort=newest"}>{discountedProducts.length ? "See all offers →" : "View new arrivals →"}</Link></div><ProductGrid items={specialProducts}/></section>}
+
+        <section className="store-home-journal"><div className="home-section-head"><div><span>STORIES, IDEAS &amp; STORE SPOTLIGHTS</span><h2>From the JashaMart journal</h2></div><Link href="/journal">Read all stories →</Link></div><div className="home-journal-grid">{journalCards.map(article => <article className="home-journal-card" key={article.slug}><Link className="home-journal-image" href={`/journal/${article.slug}`}><img src={article.image} alt=""/></Link><div><small>{article.eyebrow}</small><h3><Link href={`/journal/${article.slug}`}>{article.title}</Link></h3><p>{article.text}</p><Link className="home-journal-more" href={`/journal/${article.slug}`}>Read story →</Link></div></article>)}</div></section>
+
+        {sections.stores.active && <section className="store-home-stores"><div className="home-section-head"><div><span>INDEPENDENT BUSINESSES</span><h2>Stores to discover</h2></div><Link href="/stores">Browse all stores →</Link></div><div className="home-store-strip">{sellerNames.map(seller => <Link href={`/stores/${seller.slug}`} className="home-store-logo" key={seller.slug}><span>{seller.mark}</span><b>{seller.name}</b></Link>)}</div></section>}
+      </div>
     </div>
   </main>;
 }

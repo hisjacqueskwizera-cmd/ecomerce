@@ -78,15 +78,11 @@ export function StoreFooter() {
   const config = useStorefrontConfig();
   return <footer className="site-footer" id="footer"><div className="site-container footer-main">
     <div className="footer-brand"><Link className="brand-lockup footer-brand-lockup" href="/" aria-label="JashaMart home"><img className="brand-logo" src="/images/jashamart-logo.png" alt=""/></Link><p>{config.chrome.footerDescription}</p></div>
-    <div className="footer-column"><b>Buy</b><Link href="/shop">Shop all products</Link><Link href="/wishlist">Saved products</Link><Link href="/cart">Your cart</Link><Link href="/stores">Browse stores</Link></div>
-    <div className="footer-column"><b>Sell &amp; learn</b><Link href="/sell">Sell on JashaMart</Link><Link href="/journal">Stories &amp; updates</Link><Link href="/shipping">Delivery &amp; returns</Link><Link href="/faq">Help &amp; FAQs</Link></div>
-    <div className="footer-newsletter"><b>{config.chrome.newsletterTitle}</b><p>{config.chrome.newsletterText}</p><Newsletter/></div>
+    <div className="footer-column"><b>Information</b><Link href="/shipping">Delivery &amp; returns</Link><Link href="/faq">Frequently asked questions</Link><Link href="/journal">Stories &amp; updates</Link></div>
+    <div className="footer-column"><b>My account</b><Link href="/account">Your account</Link><Link href="/login">Sign in</Link><Link href="/wishlist">Saved products</Link><Link href="/cart">Your cart</Link></div>
+    <div className="footer-column"><b>Explore</b><Link href="/shop">Shop all products</Link><Link href="/stores">Browse stores</Link><Link href="/sell">Sell on JashaMart</Link><Link href="/journal">The JashaMart journal</Link></div>
+    <div className="footer-column footer-contact"><b>Contact info</b><p>Need help with an order, your account, or a seller listing?</p><Link href="/contact">Help &amp; contact →</Link><Link href="/faq">Visit the help center</Link></div>
   </div><div className="site-container footer-bottom"><span>© {new Date().getFullYear()} JashaMart Rwanda</span><span>Made for the way we shop here.</span><a href="#top">Back to top ↑</a></div></footer>;
-}
-
-function Newsletter() {
-  const [subscribed, setSubscribed] = useState(false);
-  return <form className="newsletter" onSubmit={event => { event.preventDefault(); setSubscribed(true); }}><input type="email" required placeholder="Your email address" aria-label="Your email address"/><button aria-label="Subscribe">{subscribed ? "✓" : "→"}</button></form>;
 }
 
 export function PageTitle({ eyebrow, title, description, children }) {
