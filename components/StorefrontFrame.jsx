@@ -2,16 +2,12 @@
 
 import { usePathname } from "next/navigation";
 import { StoreFooter, StoreHeader } from "./StoreChrome";
+import StoreAdBanners from "./StoreAdBanners";
 import { useStorefrontConfig } from "./useStorefrontConfig";
 
 export default function StorefrontFrame({ children }) {
   const pathname = usePathname();
   const isAdmin = pathname.startsWith("/admin");
   const config = useStorefrontConfig();
-  if (isAdmin) return children;
-  return <div className="grocery-storefront-frame">
-    {config.chrome.showHeader && <StoreHeader/>}
-    <div className="storefront-page-content">{children}</div>
-    {config.chrome.showFooter && <StoreFooter/>}
-  </div>;
+  return <>{!isAdmin && <StoreAdBanners placement="global"/>}{!isAdmin && config.chrome.showHeader && <StoreHeader/>}{isAdmin ? children : <div className="storefront-page-content">{children}</div>}{!isAdmin && config.chrome.showFooter && <StoreFooter/>}</>;
 }
