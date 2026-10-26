@@ -46,16 +46,19 @@ export function StoreHeader() {
     setMenuOpen(false);
   }
 
-  return <header id="top" className="site-header">
-    <div className="site-topline"><div className="site-container site-topline-inner"><span><i/> A local marketplace, made for Rwanda</span><Link href="/shipping">Delivery to all 30 districts <b aria-hidden="true">↗</b></Link></div></div>
+  return <header id="top" className="site-header marketplace-header">
+    <div className="site-topline"><div className="site-container site-topline-inner">
+      <div className="market-top-welcome"><span>Welcome to JashaMart</span><Link href="/login">Sign in</Link><span>or</span><Link href="/signup">register</Link></div>
+      <div className="market-top-links"><Link href="/shop?sort=popular">Today's deals</Link><Link href="/contact">Help &amp; contact</Link><Link href="/sell">Sell on JashaMart</Link><label className="delivery-control"><span className="delivery-copy"><small>Deliver to</small><b>{district || "Rwanda"}</b></span><select value={district} onChange={selectDistrict} aria-label="Select delivery district"><option value="">All Rwanda</option><DistrictOptions/></select></label></div>
+    </div></div>
     <div className="site-header-main"><div className="site-container site-header-inner">
-      <Link className="brand-lockup" href="/" aria-label="JashaMart home"><img className="brand-logo" src="/images/jashamart-logo.png" alt=""/></Link>
+      <Link className="brand-lockup" href="/" aria-label="JashaMart home"><img className="brand-logo" src="/images/jashamart-logo.png" alt="JashaMart"/></Link>
       <form className="store-search" onSubmit={search} role="search">
         <select aria-label="Search category" value={category} onChange={event => setCategory(event.target.value)}><option value="">All departments</option>{categories.map(item => <option key={item}>{item}</option>)}</select>
-        <input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search products, stores and more" aria-label="Search products"/>
-        <button aria-label="Search"><Icon name="search"/></button>
+        <input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search for anything" aria-label="Search products"/>
+        <button aria-label="Search"><Icon name="search"/><span>Search</span></button>
       </form>
-      <label className="delivery-control"><span className="delivery-pin" aria-hidden="true">⌖</span><span className="delivery-copy"><small>Deliver to</small><b>{district || "Rwanda"}</b></span><select value={district} onChange={selectDistrict} aria-label="Select delivery district"><option value="">All Rwanda</option><DistrictOptions/></select></label>
+      <Link className="advanced-search" href="/search">Advanced</Link>
       <div className="header-actions">
         <Link className="header-action" href="/account" aria-label="Your account"><Icon name="user"/><span>Account</span></Link>
         <Link className="header-action" href="/wishlist" aria-label={`Saved items, ${wishlist.length}`}><Icon name="heart"/><span>Saved</span>{wishlist.length > 0 && <i>{wishlist.length}</i>}</Link>
@@ -64,9 +67,9 @@ export function StoreHeader() {
       </div>
     </div></div>
     {config.chrome.showNavigation && <nav className={`site-nav ${menuOpen ? "is-open" : ""}`}><div className="site-container site-nav-inner">
-      <div className="category-menu-wrap"><button className="category-menu-trigger" aria-expanded={categoriesOpen} onClick={() => setCategoriesOpen(open => !open)}><span>Browse categories</span><b aria-hidden="true">⌄</b></button>{categoriesOpen && <div className="category-menu"><strong>Shop by department</strong>{categories.map(item => <Link key={item} href={`/shop?category=${encodeURIComponent(item)}`} onClick={() => setCategoriesOpen(false)}>{item}<span>→</span></Link>)}<Link className="category-menu-all" href="/shop" onClick={() => setCategoriesOpen(false)}>View all products</Link></div>}</div>
+      <div className="category-menu-wrap"><button className="category-menu-trigger" aria-expanded={categoriesOpen} onClick={() => setCategoriesOpen(open => !open)}><span>Shop by category</span><b aria-hidden="true">⌄</b></button>{categoriesOpen && <div className="category-menu"><strong>Shop by department</strong>{categories.map(item => <Link key={item} href={`/shop?category=${encodeURIComponent(item)}`} onClick={() => setCategoriesOpen(false)}>{item}<span>→</span></Link>)}<Link className="category-menu-all" href="/shop" onClick={() => setCategoriesOpen(false)}>View all products</Link></div>}</div>
       <div className="site-nav-links">{config.chrome.nav.filter(item => item.active && item.label && item.href).map((item, index) => <Link key={`${item.href}-${index}`} href={item.href} onClick={() => setMenuOpen(false)}>{item.label}</Link>)}</div>
-      <span className="nav-note">Shop local. Find something good.</span>
+      <span className="nav-note">Shop local · Rwanda-wide</span>
     </div></nav>}
   </header>;
 }
@@ -75,9 +78,9 @@ export function StoreFooter() {
   const config = useStorefrontConfig();
   return <footer className="site-footer" id="footer"><div className="site-container footer-main">
     <div className="footer-brand"><Link className="brand-lockup footer-brand-lockup" href="/" aria-label="JashaMart home"><img className="brand-logo" src="/images/jashamart-logo.png" alt=""/></Link><p>{config.chrome.footerDescription}</p></div>
-    <div className="footer-column"><b>Customer care</b><Link href="/contact">Contact us</Link><Link href="/shipping">Delivery &amp; returns</Link><Link href="/faq">Help &amp; FAQs</Link></div>
-    <div className="footer-column"><b>Explore</b><Link href="/shop">Shop all products</Link><Link href="/stores">Local stores</Link><Link href="/journal">Stories &amp; updates</Link><Link href="/sell">Sell on JashaMart</Link></div>
-    <div className="footer-newsletter"><b>Good things, occasionally.</b><p>{config.chrome.newsletterText}</p><Newsletter/></div>
+    <div className="footer-column"><b>Buy</b><Link href="/shop">Shop all products</Link><Link href="/wishlist">Saved products</Link><Link href="/cart">Your cart</Link><Link href="/stores">Browse stores</Link></div>
+    <div className="footer-column"><b>Sell &amp; learn</b><Link href="/sell">Sell on JashaMart</Link><Link href="/journal">Stories &amp; updates</Link><Link href="/shipping">Delivery &amp; returns</Link><Link href="/faq">Help &amp; FAQs</Link></div>
+    <div className="footer-newsletter"><b>{config.chrome.newsletterTitle}</b><p>{config.chrome.newsletterText}</p><Newsletter/></div>
   </div><div className="site-container footer-bottom"><span>© {new Date().getFullYear()} JashaMart Rwanda</span><span>Made for the way we shop here.</span><a href="#top">Back to top ↑</a></div></footer>;
 }
 
