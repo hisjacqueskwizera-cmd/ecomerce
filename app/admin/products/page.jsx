@@ -5,7 +5,7 @@ import { categories, money, rwandaDistricts } from "../../../lib/catalog";
 import SearchableSelect from "../../../components/SearchableSelect";
 import { ProductVisual } from "../../../components/ProductCard";
 import { createSupabaseBrowserClient } from "../../../lib/supabase/client";
-import { productFromRow, productToRow, uploadMarketplaceImage } from "../../../lib/marketplace-db";
+import { deleteMarketplaceImages, productFromRow, productToRow, uploadMarketplaceImage } from "../../../lib/marketplace-db";
 
 const blank = { category: categories[2] };
 const artChoices = ["tote", "sneaker", "vase", "backpack", "hoodie", "earbuds", "shirt", "cushion"];
@@ -51,8 +51,19 @@ export default function AdminProductsPage() {
   useEffect(() => { refresh(); }, []);
   useEffect(() => () => imagePreviews.forEach(URL.revokeObjectURL), [imagePreviews]);
   async function commit(product, removing = false) {
+    const previousPhotos = items.find(item => item.id === product.id)?.photos || [];
     const result = removing ? await supabase.from("catalog_products").delete().eq("id", product.id) : await supabase.from("catalog_products").upsert(productToRow(product));
     if (result.error) throw result.error;
+    const nextPhotos = removing ? [] : product.photos || [];
+    const obsoletePhotos = previousPhotos.filter(photo => !nextPhotos.includes(photo));
+    if (obsoletePhotos.length) {
+      const { data: otherProducts, error: lookupError } = await supabase.from("catalog_products").select("photos").neq("id", product.id);
+      if (!lookupError) {
+        const stillReferenced = new Set((otherProducts || []).flatMap(item => item.photos || []));
+        const unreferenced = obsoletePhotos.filter(photo => !stillReferenced.has(photo));
+        try { await deleteMarketplaceImages(unreferenced); } catch (error) { console.warn("Could not clean up replaced product images", error); }
+      }
+    }
     await refresh();
   }
   const visible = useMemo(() => items.filter(item => (filter === "All categories" || item.category === filter) && `${item.name} ${item.seller} ${item.category}`.toLowerCase().includes(query.trim().toLowerCase())), [items, filter, query]);
@@ -62,32 +73,33 @@ export default function AdminProductsPage() {
     const form = event.currentTarget;
     const data = new FormData(form);
     const name = String(data.get("name") || "").trim();
+    const productSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     const category = String(data.get("category") || "");
     const sellerName = String(data.get("seller") || "");
-    const photoFiles = data.getAll("photos").filter(file => file instanceof File && file.size);
+    const photoFiles = selectedImages.filter(file => file instanceof File && file.size);
     if (!sellers.some(seller => seller.name === sellerName)) { setFormError("Choose a store from the seller list."); return; }
-    if (retainedPhotos.length + photoFiles.length > 5) { setFormError("A product can have up to 5 images."); return; }
-    if (retainedPhotos.length + photoFiles.length < 1) { setFormError("Keep or upload at least one product image."); return; }
+    if (retainedPhotos.length + photoFiles.length !== 3) { setFormError("Each product must have exactly 3 images."); return; }
     if (photoFiles.some(file => file.size > 8 * 1024 * 1024)) { setFormError("Each image must be smaller than 8 MB."); return; }
     if (photoFiles.some(file => !file.type.startsWith("image/"))) { setFormError("Choose image files only."); return; }
 
     setFormError("");
     let photos;
-    try { photos = await Promise.all(retainedPhotos.map(async photo => {
-      if (!photo.startsWith("/images/")) return photo;
+    try { photos = await Promise.all(retainedPhotos.map(async (photo, index) => {
+      const projectAsset = photo.startsWith("/images/") || photo.startsWith("/Products/") || photo.startsWith("/products_images/");
+      const renamedProduct = Boolean(modal?.product && modal.product.slug !== productSlug);
+      if (!projectAsset && !renamedProduct) return photo;
       const response = await fetch(photo);
       if (!response.ok) throw new Error(`Could not load ${photo}`);
       const blob = await response.blob();
-      return uploadMarketplaceImage(new File([blob], photo.split("/").pop(), { type: blob.type || "image/jpeg" }), "products");
+      return uploadMarketplaceImage(new File([blob], photo.split("/").pop() || `image-${index + 1}.jpg`, { type: blob.type || "image/jpeg" }), `Products/${productSlug}`);
     })); }
     catch (error) { setFormError(error.message); return; }
     if (photoFiles.length) {
-      try { photos = [...photos, ...await Promise.all(photoFiles.map(file => uploadMarketplaceImage(file, "products")))]; }
+      try { photos = [...photos, ...await Promise.all(photoFiles.map(file => uploadMarketplaceImage(file, `Products/${productSlug}`)))]; }
       catch (error) { setFormError(error.message); return; }
     }
-    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
     const product = {
-      ...(modal?.product || {}), id: modal?.product?.id || `admin-${Date.now()}`, slug, name, category, seller: sellerName, photos, photo: photos[0] || "",
+      ...(modal?.product || {}), id: modal?.product?.id || `admin-${Date.now()}`, slug: productSlug, name, category, seller: sellerName, photos, photo: photos[0] || "",
       price: Number(data.get("price")), stock: category === "Real Estate" ? 1 : Number(data.get("stock")),
       description: data.get("description") || "A thoughtful find from an independent Rwanda based store.",
       rating: modal?.product?.rating || 0, reviews: modal?.product?.reviews || 0,
@@ -136,7 +148,7 @@ export default function AdminProductsPage() {
           <label className="admin-field">Area (m²)<input name="areaSqm" type="number" min="0" defaultValue={modal.product?.areaSqm || ""}/></label>
         </>}
         {(categoryFields[modal.category] || []).map(field => <label className="admin-field" key={`${modal.category}-${field.key}`}>{field.label}{field.districts ? <SearchableSelect name={field.key} defaultValue={modal.product?.attributes?.[field.key] || "Gasabo"} options={districtOptions} ariaLabel={field.label}/> : field.options ? <SearchableSelect name={field.key} defaultValue={modal.product?.attributes?.[field.key] || ""} options={field.options} placeholder={`Choose ${field.label.toLowerCase()}`} ariaLabel={field.label}/> : <input name={field.key} defaultValue={modal.product?.attributes?.[field.key] || modal.product?.[field.key] || ""} placeholder={field.label}/>}</label>)}
-        <div className="admin-field wide"><span>Product images</span><div className="admin-upload-gallery">{retainedPhotos.map((photo, index) => <div className="admin-upload-item" key={`${photo.slice(0, 36)}-${index}`}><img className="admin-upload-preview" src={photo} alt={`Product image ${index + 1}`}/><button type="button" onClick={() => setRetainedPhotos(current => current.filter((_, photoIndex) => photoIndex !== index))} aria-label={`Remove image ${index + 1}`}>×</button></div>)}{imagePreviews.map((preview, index) => <div className="admin-upload-item" key={preview}><img className="admin-upload-preview" src={preview} alt={`New product image ${index + 1}`}/><button type="button" onClick={() => setSelectedImages(current => current.filter((_, fileIndex) => fileIndex !== index))} aria-label={`Remove new image ${index + 1}`}>×</button></div>)}</div><label className="admin-upload-control"><span>+ Add images</span><input name="photos" type="file" accept="image/*" multiple onChange={event => { const chosen = Array.from(event.target.files || []); setSelectedImages(current => [...current, ...chosen].slice(0, Math.max(0, 5 - retainedPhotos.length))); event.target.value = ""; setFormError(""); }}/></label><small>Choose up to 5 images. The first image is used in listings. Each image can be up to 8 MB.</small></div>
+        <div className="admin-field wide"><span>Product images · 3 required</span><div className="admin-upload-gallery">{retainedPhotos.map((photo, index) => <div className="admin-upload-item" key={`${photo.slice(0, 36)}-${index}`}><img className="admin-upload-preview" src={photo} alt={`Product image ${index + 1}`}/><button type="button" onClick={() => setRetainedPhotos(current => current.filter((_, photoIndex) => photoIndex !== index))} aria-label={`Remove image ${index + 1}`}>×</button></div>)}{imagePreviews.map((preview, index) => <div className="admin-upload-item" key={preview}><img className="admin-upload-preview" src={preview} alt={`New product image ${index + 1}`}/><button type="button" onClick={() => setSelectedImages(current => current.filter((_, fileIndex) => fileIndex !== index))} aria-label={`Remove new image ${index + 1}`}>×</button></div>)}</div><label className="admin-upload-control"><span>+ Add images</span><input name="photos" type="file" accept="image/*" multiple onChange={event => { const chosen = Array.from(event.target.files || []); setSelectedImages(current => [...current, ...chosen].slice(0, Math.max(0, 3 - retainedPhotos.length))); event.target.value = ""; setFormError(""); }}/></label><small>Upload exactly 3 images (up to 8 MB each). Images are stored in Supabase under Products/{modal.product?.slug || "product-name"}; the first is used in listings.</small></div>
         <label className="admin-field wide">Description<textarea name="description" defaultValue={modal.product?.description || ""} placeholder="Describe this product"/></label>
       </div>{formError && <p className="coupon-error">{formError}</p>}<div className="admin-modal-actions"><button type="button" className="admin-secondary" onClick={() => setModal(null)}>Cancel</button><button className="admin-primary">{modal.product ? "Save changes" : "Add to catalog"}</button></div></form>
     </section></div>}
@@ -162,5 +174,3 @@ async function optimizeImage(file) {
   context.drawImage(image, 0, 0, canvas.width, canvas.height);
   return canvas.toDataURL("image/jpeg", 0.7);
 }
-
-
