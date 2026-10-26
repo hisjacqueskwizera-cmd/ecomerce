@@ -8,6 +8,16 @@ import { useStore } from "./StoreProvider";
 import DistrictOptions from "./DistrictOptions";
 import { useStorefrontConfig } from "./useStorefrontConfig";
 
+function Icon({ name }) {
+  const paths = {
+    search: <><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></>,
+    user: <><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.5 3.1-5.3 7-5.3s6.2 1.8 7 5.3"/></>,
+    heart: <path d="M20.2 8.7c0 4.4-8.2 10-8.2 10s-8.2-5.6-8.2-10a4.3 4.3 0 0 1 8.2-1.8 4.3 4.3 0 0 1 8.2 1.8Z"/>,
+    bag: <><path d="M5 8h14l1 12H4L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></>,
+  };
+  return <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">{paths[name]}</svg>;
+}
+
 export function StoreHeader() {
   const { cartCount, subtotal, wishlist } = useStore();
   const config = useStorefrontConfig();
@@ -19,12 +29,14 @@ export function StoreHeader() {
   const router = useRouter();
 
   useEffect(() => setDistrict(localStorage.getItem("openshop-delivery-district") || ""), []);
+
   function selectDistrict(event) {
     const selected = event.target.value;
     setDistrict(selected);
     if (selected) localStorage.setItem("openshop-delivery-district", selected);
     else localStorage.removeItem("openshop-delivery-district");
   }
+
   function search(event) {
     event.preventDefault();
     const params = new URLSearchParams();
@@ -34,33 +46,44 @@ export function StoreHeader() {
     setMenuOpen(false);
   }
 
-  return <header id="top" className="store-header amazon-header">
-    <div className="amazon-mainbar"><div className="shell amazon-header-inner">
-      <Link className="amazon-wordmark" href="/" aria-label="Open Shop home"><span className="amazon-logo-mark">O</span><span>Open Shop<small>{config.chrome.tagline}</small></span></Link>
-      <label className="amazon-location"><span className="location-pin" aria-hidden="true">⌖</span><span><small>Deliver to</small><b>{district || "Rwanda"}</b></span><select value={district} onChange={selectDistrict} aria-label="Select delivery district"><option value="">All Rwanda</option><DistrictOptions/></select></label>
-      <form className="amazon-search" onSubmit={search}><select aria-label="Search category" value={category} onChange={event => setCategory(event.target.value)}><option value="">All departments</option>{categories.map(item => <option key={item}>{item}</option>)}</select><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search products, stores and categories" aria-label="Search products"/><button aria-label="Search">Search</button></form>
-      <Link className="amazon-account" href="/account"><small>Hello, sign in</small><b>Account &amp; Lists</b></Link>
-      <Link className="amazon-orders" href="/account"><small>Returns</small><b>&amp; Orders</b></Link>
-      <Link className="amazon-saved" href="/wishlist"><span aria-hidden="true">♡</span><b>Saved</b><i>{wishlist.length}</i></Link>
-      <Link className="amazon-cart" href="/cart" aria-label={`Cart, ${cartCount} items`}><span className="cart-icon" aria-hidden="true">Cart<i>{cartCount}</i></span><b>Cart</b><small>{money(subtotal)}</small></Link>
+  return <header id="top" className="site-header">
+    <div className="site-topline"><div className="site-container site-topline-inner"><span><i/> A local marketplace, made for Rwanda</span><Link href="/shipping">Delivery to all 30 districts <b aria-hidden="true">↗</b></Link></div></div>
+    <div className="site-header-main"><div className="site-container site-header-inner">
+      <Link className="brand-lockup" href="/" aria-label="Open Shop home"><span className="brand-mark">o</span><span className="brand-name">open shop<small>{config.chrome.tagline}</small></span></Link>
+      <form className="store-search" onSubmit={search} role="search">
+        <select aria-label="Search category" value={category} onChange={event => setCategory(event.target.value)}><option value="">All departments</option>{categories.map(item => <option key={item}>{item}</option>)}</select>
+        <input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search products, stores and more" aria-label="Search products"/>
+        <button aria-label="Search"><Icon name="search"/></button>
+      </form>
+      <label className="delivery-control"><span className="delivery-pin" aria-hidden="true">⌖</span><span className="delivery-copy"><small>Deliver to</small><b>{district || "Rwanda"}</b></span><select value={district} onChange={selectDistrict} aria-label="Select delivery district"><option value="">All Rwanda</option><DistrictOptions/></select></label>
+      <div className="header-actions">
+        <Link className="header-action" href="/account" aria-label="Your account"><Icon name="user"/><span>Account</span></Link>
+        <Link className="header-action" href="/wishlist" aria-label={`Saved items, ${wishlist.length}`}><Icon name="heart"/><span>Saved</span>{wishlist.length > 0 && <i>{wishlist.length}</i>}</Link>
+        <Link className="header-cart" href="/cart" aria-label={`Cart, ${cartCount} items`}><span className="cart-icon-wrap"><Icon name="bag"/>{cartCount > 0 && <i>{cartCount}</i>}</span><span><b>Cart</b><small>{money(subtotal)}</small></span></Link>
+        <button className="mobile-menu-toggle" onClick={() => setMenuOpen(open => !open)} aria-expanded={menuOpen} aria-label={menuOpen ? "Close menu" : "Open menu"}>{menuOpen ? "×" : "☰"}</button>
+      </div>
     </div></div>
-    {config.chrome.showNavigation && <nav className="amazon-nav"><div className="shell amazon-nav-inner">
-      <div className="amazon-all-wrap"><button className="amazon-all" aria-expanded={categoriesOpen} onClick={() => setCategoriesOpen(open => !open)}><span aria-hidden="true">☰</span> All</button>{categoriesOpen && <div className="amazon-category-menu"><b>Shop by department</b>{categories.map(item => <Link key={item} href={`/shop?category=${encodeURIComponent(item)}`} onClick={() => setCategoriesOpen(false)}>{item}<span>›</span></Link>)}<Link className="all-departments" href="/shop" onClick={() => setCategoriesOpen(false)}>Browse all products</Link></div>}</div>
-      <button className="amazon-mobile-toggle" onClick={() => setMenuOpen(open => !open)} aria-expanded={menuOpen}>Menu</button>
-      <div className={`amazon-nav-links ${menuOpen ? "nav-open" : ""}`}>{config.chrome.nav.filter(item => item.active && item.label && item.href).map((item, index) => <Link key={`${item.href}-${index}`} href={item.href}>{item.label}</Link>)}</div>
-      <span className="amazon-nav-note">Local stores. Rwanda-wide delivery.</span>
+    {config.chrome.showNavigation && <nav className={`site-nav ${menuOpen ? "is-open" : ""}`}><div className="site-container site-nav-inner">
+      <div className="category-menu-wrap"><button className="category-menu-trigger" aria-expanded={categoriesOpen} onClick={() => setCategoriesOpen(open => !open)}><span>Browse categories</span><b aria-hidden="true">⌄</b></button>{categoriesOpen && <div className="category-menu"><strong>Shop by department</strong>{categories.map(item => <Link key={item} href={`/shop?category=${encodeURIComponent(item)}`} onClick={() => setCategoriesOpen(false)}>{item}<span>→</span></Link>)}<Link className="category-menu-all" href="/shop" onClick={() => setCategoriesOpen(false)}>View all products</Link></div>}</div>
+      <div className="site-nav-links">{config.chrome.nav.filter(item => item.active && item.label && item.href).map((item, index) => <Link key={`${item.href}-${index}`} href={item.href} onClick={() => setMenuOpen(false)}>{item.label}</Link>)}</div>
+      <span className="nav-note">Shop local. Find something good.</span>
     </div></nav>}
   </header>;
 }
 
 export function StoreFooter() {
   const config = useStorefrontConfig();
-  return <footer id="footer"><a className="footer-back-to-top" href="#top">Back to top</a><div className="shell footer-grid"><div><Link className="wordmark" href="/">Open Shop</Link><p>{config.chrome.footerDescription}</p></div><div><b>Customer service</b><Link href="/contact">Contact us</Link><Link href="/shipping">Shipping &amp; returns</Link><Link href="/faq">Help &amp; FAQs</Link></div><div><b>Discover</b><Link href="/shop">Shop all products</Link><Link href="/stores">Our stores</Link><Link href="/journal">Stories &amp; updates</Link><Link href="/admin">Admin console</Link></div><div><b>Stay in the know</b><p>{config.chrome.newsletterText}</p><Newsletter/></div></div><div className="copyright">Copyright &copy; Open Shop. All Rights Reserved.</div></footer>;
+  return <footer className="site-footer" id="footer"><div className="site-container footer-main">
+    <div className="footer-brand"><Link className="brand-lockup footer-brand-lockup" href="/"><span className="brand-mark">o</span><span className="brand-name">open shop<small>Rwanda's local marketplace</small></span></Link><p>{config.chrome.footerDescription}</p></div>
+    <div className="footer-column"><b>Customer care</b><Link href="/contact">Contact us</Link><Link href="/shipping">Delivery &amp; returns</Link><Link href="/faq">Help &amp; FAQs</Link></div>
+    <div className="footer-column"><b>Explore</b><Link href="/shop">Shop all products</Link><Link href="/stores">Local stores</Link><Link href="/journal">Stories &amp; updates</Link><Link href="/sell">Sell on Open Shop</Link></div>
+    <div className="footer-newsletter"><b>Good things, occasionally.</b><p>{config.chrome.newsletterText}</p><Newsletter/></div>
+  </div><div className="site-container footer-bottom"><span>© {new Date().getFullYear()} Open Shop Rwanda</span><span>Made for the way we shop here.</span><a href="#top">Back to top ↑</a></div></footer>;
 }
 
 function Newsletter() {
   const [subscribed, setSubscribed] = useState(false);
-  return <form className="newsletter" onSubmit={event => { event.preventDefault(); setSubscribed(true); }}><input type="email" required placeholder="Your email address" aria-label="Your email address"/><button>{subscribed ? "✓" : "→"}</button></form>;
+  return <form className="newsletter" onSubmit={event => { event.preventDefault(); setSubscribed(true); }}><input type="email" required placeholder="Your email address" aria-label="Your email address"/><button aria-label="Subscribe">{subscribed ? "✓" : "→"}</button></form>;
 }
 
 export function PageTitle({ eyebrow, title, description, children }) {

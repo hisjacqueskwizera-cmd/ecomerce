@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { createSupabaseServerClient } from "../../../../lib/supabase/server";
-import { createAdvertisingAgreement, createSellerAgreement } from "../../../../lib/contracts/pdf.mjs";
+import { createSupabaseServerClient } from "../../../../../lib/supabase/server";
+import { createAdvertisingAgreement, createSellerAgreement } from "../../../../../lib/contracts/pdf.mjs";
 
 export const dynamic = "force-dynamic";
 
