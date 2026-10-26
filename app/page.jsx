@@ -47,7 +47,6 @@ export default function Home() {
   const sections = config.home.sections;
   const products = useCatalogProducts();
   const [activeTab, setActiveTab] = useState("featured");
-  const [activeSlide, setActiveSlide] = useState(0);
   const categoryCounts = categories.map(name => ({ name, count: products.filter(product => product.category === name).length, ...(categoryVisuals[name] || { label: name, symbol: "✦", image: "" }) })).filter(item => item.count > 0).sort((a, b) => b.count - a.count);
   const departments = categoryCounts.slice(0, 6);
   const featuredProducts = [...products].sort((a, b) => b.reviews - a.reviews || b.rating - a.rating).slice(0, 10);
@@ -62,11 +61,6 @@ export default function Home() {
     { key: "bestsellers", label: "Bestsellers", title: sections.bestSellers.title, active: sections.bestSellers.active, items: bestSellers },
   ].filter(tab => tab.active);
   const selectedTab = productTabs.find(tab => tab.key === activeTab) || productTabs[0];
-  const heroSlides = [
-    { eyebrow: "HOME & FURNITURE", title: ["Make room for", "something good."], text: "Discover furniture, decor, and thoughtful finds from independent local stores.", image: "/images/catalog/wooden-dining-table.jpg", href: "/shop?category=Furniture", cta: "Explore home" },
-    { eyebrow: "HOMES & LOCAL SPACES", title: ["Find a space", "that feels right."], text: "Browse homes, rentals, and commercial spaces listed by local sellers.", image: "/images/catalog/kicukiro-two-bedroom-apartment.jpg", href: "/shop?category=Real%20Estate", cta: "Explore properties" },
-  ];
-  const currentHero = heroSlides[activeSlide];
   const spotlightSeller = sellers[0];
   const discountPercent = dealProduct?.oldPrice ? Math.round((dealProduct.oldPrice - dealProduct.price) / dealProduct.oldPrice * 100) : 0;
   const sellerNames = sellers.slice(0, 8);
@@ -88,13 +82,6 @@ export default function Home() {
       </aside>
 
       <div className="store-home-main">
-        <section className="store-hero-carousel" aria-label="Marketplace highlights">
-          <img className="store-hero-image" src={currentHero.image} alt=""/>
-          <div className="store-hero-overlay"/>
-          <div className="store-hero-content" aria-live="polite"><span>{currentHero.eyebrow}</span><h1>{currentHero.title.map((line, index) => <span key={`${activeSlide}-${index}`}>{index > 0 && <br/>}{line}</span>)}</h1><p>{currentHero.text}</p><Link className="store-hero-cta" href={currentHero.href}>{currentHero.cta} <span aria-hidden="true">→</span></Link></div>
-          <div className="store-hero-controls"><button onClick={() => setActiveSlide(value => (value + heroSlides.length - 1) % heroSlides.length)} aria-label="Previous highlight">‹</button><div>{heroSlides.map((slide, index) => <button key={slide.eyebrow} className={activeSlide === index ? "active" : ""} onClick={() => setActiveSlide(index)} aria-label={`Show highlight ${index + 1}`}/>)}</div><button onClick={() => setActiveSlide(value => (value + 1) % heroSlides.length)} aria-label="Next highlight">›</button></div>
-        </section>
-
         {sections.departments.active && <section className="store-home-departments"><div className="home-section-head"><div><span>FIND YOUR NEXT FAVORITE</span><h2>Shop by category</h2></div><Link href="/shop">All departments →</Link></div><div className="home-category-circles">{departments.map(item => <Link href={`/shop?category=${encodeURIComponent(item.name)}`} className="home-category-circle" key={item.name}><span className="home-category-circle-art">{item.image ? <img src={item.image} alt=""/> : <b>{item.symbol}</b>}</span><span>{item.label}</span></Link>)}</div></section>}
 
         {productTabs.length > 0 && <section className="store-home-products"><div className="home-section-head home-products-head"><div><span>GOOD FINDS FROM LOCAL STORES</span><h2>{selectedTab?.title || "Products for you"}</h2></div><Link href="/shop">Shop all products →</Link></div><div className="home-product-tabs" role="tablist" aria-label="Product collections">{productTabs.map(tab => <button key={tab.key} role="tab" aria-selected={(selectedTab?.key || "") === tab.key} className={(selectedTab?.key || "") === tab.key ? "active" : ""} onClick={() => setActiveTab(tab.key)}>{tab.label}</button>)}</div><ProductGrid items={selectedTab?.items || []}/></section>}
