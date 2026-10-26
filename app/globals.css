@@ -1,4 +1,4 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Open+Sans:wght@400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap');
 
 .contact-form input,.contact-form select,.contact-form textarea{height:41px;width:100%;padding:0 11px;border:1px solid #e2e5e8;border-radius:2px;background:#fff;outline-color:#a2e7a4;font:inherit;font-size:12px;color:#454545}.contact-form textarea{height:auto;min-height:135px;padding:11px;resize:vertical}.contact-form input:focus,.contact-form select:focus,.contact-form textarea:focus{border-color:#9cdb9b;box-shadow:0 0 0 2px #80001F14}.contact-form select{appearance:auto}
 
@@ -1554,4 +1554,686 @@ body { background: var(--jm-canvas); color: var(--jm-ink); }
   .market-home-shell .product-name { font-size: 10px; }
   .home-widget-title { font-size: 10px; }
   .site-footer { margin-top: 4px; }
+}
+
+
+/* Figma eCommerce kit adaptation: consistent public-site system, using JashaMart brand tokens.
+   All page styles are scoped to StorefrontFrame's public wrapper; admin routes are excluded. */
+.storefront-page-content {
+  --shop-space-1: 6px;
+  --shop-space-2: 10px;
+  --shop-space-3: 16px;
+  --shop-space-4: 24px;
+  --shop-space-5: 32px;
+  --shop-radius: 8px;
+  --shop-shadow: 0 8px 26px #4d29300b;
+  color: var(--jm-ink);
+  background: var(--jm-canvas);
+  font-family: "Open Sans", Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+}
+.storefront-page-content :is(h1,h2,h3,h4,.page-title h1,.product-name) {
+  font-family: "Poppins", "Open Sans", Arial, sans-serif;
+}
+.storefront-page-content :is(button,input,select,textarea) { font-family: inherit; }
+.storefront-page-content :is(button,a,input,select,textarea):focus-visible {
+  outline: 3px solid var(--jm-cream);
+  outline-offset: 3px;
+}
+
+/* Public chrome — shared header/footer frame used by every customer-facing route. */
+.site-header,.site-footer { font-family: "Open Sans", Arial, sans-serif; }
+.site-header { border-bottom: 1px solid var(--jm-line); box-shadow: 0 2px 10px #33232b08; }
+.site-topline { min-height: 36px; height: auto; padding: 5px 0; background: var(--jm-cream-light); color: #614d51; }
+.site-topline-inner,.site-header-inner,.site-nav-inner { width: min(1320px,calc(100% - 48px)); }
+.market-top-welcome,.market-top-links { gap: 13px; font-size: 11px; }
+.market-top-welcome a,.market-top-links a { color: var(--jm-wine); font-weight: 600; }
+.market-top-links { gap: 22px; }
+.market-top-links .delivery-control { min-height: 32px; padding: 0 8px; border: 1px solid #ddc7a6; border-radius: 6px; background: #fffaf1; }
+.site-header-main { background: var(--jm-paper); }
+.site-header-inner { min-height: 82px; grid-template-columns: 180px minmax(240px,1fr) 80px auto; gap: 15px; }
+.brand-lockup { display: flex; align-items: center; }
+.brand-logo { width: 172px; max-height: 46px; object-fit: contain; }
+.store-search { height: 48px; grid-template-columns: 174px minmax(0,1fr) 108px; border: 1px solid #cdb296; border-radius: 8px; box-shadow: inset 0 0 0 1px #ffffff; }
+.store-search:focus-within { border-color: var(--jm-wine); box-shadow: 0 0 0 3px #80001f14; }
+.store-search select { background: #fbf3e6; font-size: 12px; }
+.store-search input { padding: 0 15px; font-size: 13px; }
+.store-search button { border-radius: 0 7px 7px 0; background: var(--jm-wine); }
+.advanced-search { color: #816d70; font-size: 11px; }
+.header-actions { gap: 17px; }
+.header-action { color: #57474a; font-size: 10px; }
+.header-action svg,.header-cart svg { width: 21px; height: 21px; }
+.header-cart { color: var(--jm-wine); }
+.site-nav { border-top: 0; background: var(--jm-wine); }
+.site-nav-inner { min-height: 46px; height: 46px; gap: 27px; }
+.category-menu-trigger { min-height: 36px; height: 36px; border: 1px solid #a76270; border-radius: 6px; background: var(--jm-wine-dark); }
+.site-nav-links { gap: clamp(14px,2.3vw,30px); }
+.site-nav-links a { font-size: 11px; font-weight: 600; }
+.nav-note { font-size: 10px; }
+.category-menu { border: 1px solid var(--jm-line); border-radius: 0 0 9px 9px; background: var(--jm-paper); box-shadow: 0 16px 34px #30171d1c; }
+.site-footer { margin-top: 0; border-top: 1px solid #ddc7a6; background: #f1e1c5; color: #493136; }
+.site-footer .footer-main { width: min(1320px,calc(100% - 48px)); padding-top: 43px; padding-bottom: 34px; }
+.site-footer .footer-brand p { max-width: 280px; color: #715e60; font-size: 12px; line-height: 1.75; }
+.site-footer .footer-column { gap: 10px; }
+.site-footer .footer-column > b { margin-bottom: 4px; color: #4a2a32; font-family: "Poppins",sans-serif; font-size: 13px; }
+.site-footer .footer-column a,.site-footer .footer-contact p { color: #715e60; font-size: 12px; line-height: 1.55; }
+.site-footer .footer-column a:hover,.site-footer .footer-bottom a { color: var(--jm-wine); }
+.site-footer .footer-bottom { width: min(1320px,calc(100% - 48px)); min-height: 50px; border-top: 1px solid #ddc7a6; color: #715e60; font-size: 11px; }
+
+/* Shared page shell, typography, cards and controls. */
+.storefront-page-content .page-surface { min-height: 62vh; padding: clamp(28px,4vw,52px) 0 76px; background: var(--jm-canvas); }
+.storefront-page-content .store-page,.storefront-page-content .site-container { width: min(1240px,calc(100% - 48px)); }
+.storefront-page-content .store-page { min-height: 420px; }
+.storefront-page-content .breadcrumbs { margin: 0 0 20px; color: #89787a; font-size: 12px; }
+.storefront-page-content .breadcrumbs a { color: #655154; }
+.storefront-page-content .breadcrumbs a:hover { color: var(--jm-wine); }
+.storefront-page-content .page-title { margin: 0 0 30px; padding-bottom: 18px; border-bottom: 1px solid var(--jm-line); }
+.storefront-page-content .page-title > span,.storefront-page-content .eyebrow,.storefront-page-content .blue-eyebrow { margin-bottom: 8px; color: #8b5b62; font-size: 10px; font-weight: 700; letter-spacing: .13em; }
+.storefront-page-content .page-title h1 { margin: 0 0 9px; color: var(--jm-ink); font-size: clamp(27px,3vw,38px); font-weight: 600; letter-spacing: -.035em; line-height: 1.2; }
+.storefront-page-content .page-title p { max-width: 760px; margin: 0; color: var(--jm-muted); font-size: 14px; line-height: 1.75; }
+.storefront-page-content .button-primary,.storefront-page-content .button-dark {
+  min-height: 46px; height: auto; padding: 12px 21px; border: 1px solid var(--jm-wine); border-radius: 7px;
+  background: var(--jm-wine); color: #fffaf1; font-size: 13px; font-weight: 700;
+  box-shadow: 0 3px 8px #80001f18; transition: transform .18s ease,background .18s ease,box-shadow .18s ease;
+}
+.storefront-page-content .button-primary:hover { transform: translateY(-1px); border-color: var(--jm-wine-dark); background: var(--jm-wine-dark); color: #fffaf1; box-shadow: 0 6px 13px #80001f22; }
+.storefront-page-content .button-dark { border-color: #60444b; background: #60444b; }
+.storefront-page-content .button-dark:hover { background: var(--jm-wine-dark); }
+.storefront-page-content .text-link,.storefront-page-content .page-title a { color: var(--jm-wine); }
+.storefront-page-content .text-link:hover { color: var(--jm-wine-dark); }
+.storefront-page-content :is(.empty-state,.faq-item,.contact-form,.contact-details,.journal-card,.store-directory-card,.account-panel,.checkout-panel,.order-summary,.cart-lines,.detail-gallery,.detail-copy,.seller-application,.confirmation-card) {
+  border-color: var(--jm-line); border-radius: var(--shop-radius); background: var(--jm-paper); box-shadow: var(--shop-shadow);
+}
+.storefront-page-content .empty-state { padding: 42px 24px; }
+.storefront-page-content :is(.loading-state,.demo-notice) { border-radius: 6px; }
+.storefront-page-content .demo-notice { border: 1px solid #dfceb2; background: #fbf3e7; color: #6c5558; }
+.storefront-page-content :is(input:not([type=checkbox]):not([type=radio]),select,textarea) {
+  min-height: 46px; border: 1px solid #ddcdb6; border-radius: 7px; background: #fffefa; color: var(--jm-ink); font-size: 14px;
+}
+.storefront-page-content textarea { min-height: 120px; padding: 12px 14px; }
+.storefront-page-content :is(input,select,textarea)::placeholder { color: #97898a; }
+.storefront-page-content :is(input,select,textarea):focus { border-color: #a96a77; box-shadow: 0 0 0 3px #80001f12; outline: none; }
+.storefront-page-content label { color: #544347; font-size: 12px; font-weight: 600; }
+
+/* Homepage: use the kit's editorial rhythm, strong hero, clear department and product modules. */
+.storefront-page-content .market-home-shell { padding: 25px 0 64px; background: var(--jm-canvas); }
+.storefront-page-content .store-home-layout { width: min(1240px,calc(100% - 48px)); grid-template-columns: minmax(205px,245px) minmax(0,1fr); gap: 22px; }
+.storefront-page-content .store-home-main,.storefront-page-content .store-home-sidebar { gap: 20px; }
+.storefront-page-content :is(.home-widget,.store-home-departments,.store-home-products,.store-home-special-products,.store-home-journal,.store-home-stores) { overflow: hidden; border: 1px solid var(--jm-line); border-radius: 9px; background: var(--jm-paper); box-shadow: var(--shop-shadow); }
+.storefront-page-content .home-widget-title { padding: 13px 16px; background: var(--jm-wine); color: #fff8ed; font-family: "Poppins",sans-serif; font-size: 13px; }
+.storefront-page-content .home-widget-title::after { color: var(--jm-cream); }
+.storefront-page-content .home-category-list { padding: 7px 14px 5px; }
+.storefront-page-content .home-category-list a { min-height: 39px; border-bottom: 1px solid #f1e9df; color: #56464a; font-size: 12px; }
+.storefront-page-content .home-category-list a:hover { color: var(--jm-wine); background: #fbf4e8; }
+.storefront-page-content .home-widget-more { color: var(--jm-wine); font-size: 11px; }
+.storefront-page-content .home-widget-cta,.storefront-page-content .home-sidebar-newsletter .newsletter-band-form button { min-height: 42px; border-radius: 7px; background: var(--jm-wine); }
+.storefront-page-content .home-widget-cta:hover,.storefront-page-content .home-sidebar-newsletter .newsletter-band-form button:hover { background: var(--jm-wine-dark); }
+.storefront-page-content .home-deal-discount { border-radius: 5px; background: var(--jm-wine); }
+.storefront-page-content :is(.home-service-widget > a > i,.home-spotlight-mark,.home-store-logo > span) { background: var(--jm-cream-light); color: var(--jm-wine); }
+.storefront-page-content .home-side-promo { border-color: var(--jm-line); border-radius: 8px; }
+.storefront-page-content .store-hero-carousel { min-height: clamp(300px,31vw,420px); border-radius: 10px; background: var(--jm-wine-dark); }
+.storefront-page-content .store-hero-image { left: 42%; width: 58%; object-position: center; clip-path: polygon(10% 0,100% 0,100% 100%,0 100%); }
+.storefront-page-content .store-hero-overlay { background: linear-gradient(90deg,#5b0016 0%,#5b0016 35%,#5b0016e8 49%,#5b001600 78%); }
+.storefront-page-content .store-hero-content { width: 58%; padding-left: clamp(25px,4.4vw,58px); }
+.storefront-page-content .store-hero-content > span,.storefront-page-content .home-promo-copy small { color: var(--jm-cream); }
+.storefront-page-content .store-hero-content h1 { font-family: "Poppins",sans-serif; font-size: clamp(29px,3.5vw,44px); line-height: 1.16; }
+.storefront-page-content .store-hero-content p { max-width: 420px; color: #f4e6da; font-size: 15px; line-height: 1.7; }
+.storefront-page-content .store-hero-cta { min-height: 44px; border-radius: 7px; background: var(--jm-cream); color: var(--jm-wine-dark); font-size: 13px; }
+.storefront-page-content .store-hero-cta:hover { background: #f2d9ab; color: #4b0012; }
+.storefront-page-content .store-hero-controls > button { border-radius: 50%; background: var(--jm-wine); }
+.storefront-page-content .home-section-head { margin: 0 0 18px; }
+.storefront-page-content .home-section-head h2 { color: var(--jm-ink); font-family: "Poppins",sans-serif; font-size: 21px; font-weight: 600; letter-spacing: -.025em; }
+.storefront-page-content .home-section-head > a { color: var(--jm-wine); font-size: 12px; font-weight: 700; }
+.storefront-page-content .home-section-head > div > span { color: #89787a; font-size: 11px; }
+.storefront-page-content .store-home-departments,.storefront-page-content .store-home-products,.storefront-page-content .store-home-special-products,.storefront-page-content .store-home-journal,.storefront-page-content .store-home-stores { padding: 20px; }
+.storefront-page-content .home-category-circles { gap: 12px; }
+.storefront-page-content .home-category-circle { min-height: 112px; gap: 10px; padding: 11px 8px; border: 1px solid var(--jm-line); border-radius: 8px; background: #fffefa; color: #57474a; font-size: 11px; font-weight: 600; }
+.storefront-page-content .home-category-circle-art { width: 100%; height: 60px; border: 0; border-radius: 6px; background: #f7eddd; }
+.storefront-page-content .home-category-circle-art img { object-fit: contain; }
+.storefront-page-content .home-category-circle-art b { color: var(--jm-wine); }
+.storefront-page-content .home-category-circle:hover { border-color: #c9a77e; background: #fcf5e8; color: var(--jm-wine); }
+.storefront-page-content .home-product-tabs { border-color: var(--jm-line); }
+.storefront-page-content .home-product-tabs button.active { color: var(--jm-wine); }
+.storefront-page-content .home-product-tabs button.active::after { background: var(--jm-wine); }
+.storefront-page-content .store-home-products .product-grid,.storefront-page-content .store-home-special-products .product-grid { gap: 15px; }
+.storefront-page-content .home-promo-card { min-height: 170px; border-radius: 9px; }
+.storefront-page-content .home-promo-copy b { font-family: "Poppins",sans-serif; font-size: 18px; line-height: 1.35; }
+.storefront-page-content .home-journal-card,.storefront-page-content .home-store-logo { border-color: var(--jm-line); border-radius: 8px; background: #fffefa; }
+
+/* Figma product cards / grids reused on home, category and search pages. */
+.storefront-page-content .product-grid { gap: 18px; }
+.storefront-page-content .product-card { overflow: hidden; border: 1px solid var(--jm-line); border-radius: 9px; background: var(--jm-paper); box-shadow: 0 3px 12px #502b3208; transition: transform .2s ease,border-color .2s ease,box-shadow .2s ease; }
+.storefront-page-content .product-card:hover { transform: translateY(-3px); border-color: #ceb48f; box-shadow: 0 12px 26px #502b3214; }
+.storefront-page-content .product-picture-link { display: block; background: #f8f0e2; }
+.storefront-page-content .product-art { min-height: 200px; background: #f8f0e2; }
+.storefront-page-content .product-photo { mix-blend-mode: multiply; }
+.storefront-page-content .product-badge { top: 13px; left: 13px; right: auto; border-radius: 5px; padding: 5px 9px; background: var(--jm-wine); color: #fff8ed; font-size: 10px; }
+.storefront-page-content .quick-heart { top: 12px; right: 12px; left: auto; z-index: 2; width: 36px; height: 36px; border: 1px solid #eadfce; background: #fffdf8ed; color: var(--jm-wine); opacity: 1; box-shadow: 0 2px 6px #30171d12; }
+.storefront-page-content .product-card:hover .quick-heart { opacity: 1; }
+.storefront-page-content .product-details { display: flex; min-height: 148px; flex-direction: column; gap: 7px; padding: 15px; }
+.storefront-page-content .product-vendor { color: #8b7774; font-size: 10px; font-weight: 600; }
+.storefront-page-content .product-name { display: -webkit-box; min-height: 44px; overflow: hidden; color: #493136; font-family: "Poppins",sans-serif; font-size: 14px; font-weight: 500; line-height: 1.55; white-space: normal; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.storefront-page-content .product-rating { color: #a67a27; font-size: 11px; }
+.storefront-page-content .price-line { gap: 8px; color: var(--jm-wine); font-size: 13px; font-weight: 700; }
+.storefront-page-content .price-line del { color: #a29391; font-size: 11px; font-weight: 400; }
+.storefront-page-content .add-button { min-height: 40px; height: auto; margin-top: auto; border: 1px solid #ddc6a5; border-radius: 7px; background: #fffaf0; color: var(--jm-wine); font-size: 12px; font-weight: 700; }
+.storefront-page-content .add-button:hover { border-color: var(--jm-wine); background: var(--jm-wine); color: #fffaf1; }
+
+/* Product discovery: department chips, clear filter panel, count/sort toolbar. */
+.storefront-page-content .market-listing-page { padding-top: 0; }
+.storefront-page-content .listing-department-strip { gap: 10px; margin: -6px 0 22px; }
+.storefront-page-content .listing-department-strip a { min-height: 40px; padding: 9px 15px; border: 1px solid var(--jm-line); border-radius: 999px; background: var(--jm-paper); color: #57474a; font-size: 12px; }
+.storefront-page-content .listing-department-strip a:hover,.storefront-page-content .listing-department-strip a.active { border-color: var(--jm-wine); background: var(--jm-wine); color: #fff8ed; }
+.storefront-page-content .listing-layout { grid-template-columns: minmax(220px,265px) minmax(0,1fr); gap: 25px; }
+.storefront-page-content .filter-panel { padding: 19px; border: 1px solid var(--jm-line); border-radius: 9px; background: var(--jm-paper); box-shadow: var(--shop-shadow); }
+.storefront-page-content .filter-panel h2,.storefront-page-content .filter-group h3 { color: #493136; font-family: "Poppins",sans-serif; font-size: 14px; }
+.storefront-page-content .filter-group { padding: 16px 0; border-top-color: #eee4d7; }
+.storefront-page-content .filter-group label,.storefront-page-content .filter-facets label { color: #66575a; font-size: 12px; }
+.storefront-page-content .listing-results-heading { min-height: 57px; margin-bottom: 17px; padding: 0 0 13px; border-bottom: 1px solid var(--jm-line); }
+.storefront-page-content .listing-results-heading h2 { color: var(--jm-ink); font-family: "Poppins",sans-serif; font-size: 19px; }
+.storefront-page-content .listing-results-note { color: #837275; font-size: 12px; }
+.storefront-page-content .listing-results-heading select { min-width: 165px; }
+.storefront-page-content .listing-results .product-grid { gap: 16px; }
+.storefront-page-content .listing-tail { margin-top: 28px; border-color: var(--jm-line); }
+
+/* Product detail: kit-like gallery + structured buy panel and product facts. */
+.storefront-page-content .product-detail { grid-template-columns: minmax(0,1.08fr) minmax(370px,.92fr); gap: clamp(24px,4vw,54px); }
+.storefront-page-content .detail-gallery { padding: 19px; border: 1px solid var(--jm-line); border-radius: 11px; background: var(--jm-paper); }
+.storefront-page-content .detail-gallery .product-art-large { min-height: clamp(380px,42vw,570px); border-radius: 8px; background: #f7efdf; }
+.storefront-page-content .detail-copy { position: sticky; top: 20px; padding: 25px; border: 1px solid var(--jm-line); border-radius: 11px; background: var(--jm-paper); }
+.storefront-page-content .detail-copy h1 { color: #38272d; font-family: "Poppins",sans-serif; font-size: clamp(26px,2.8vw,36px); line-height: 1.25; }
+.storefront-page-content .detail-copy .eyebrow { color: #8b5b62; }
+.storefront-page-content .detail-copy :is(.product-vendor,.seller-link) { color: #867376; font-size: 12px; }
+.storefront-page-content .detail-price { color: var(--jm-wine); font-size: 25px; font-weight: 700; }
+.storefront-page-content .detail-copy :is(.detail-stock,.in-stock) { color: #55754c; }
+.storefront-page-content .detail-buy-row { gap: 12px; margin-top: 21px; }
+.storefront-page-content .detail-buy-row .button-primary { flex: 1; min-height: 50px; }
+.storefront-page-content .detail-info,.storefront-page-content .detail-facts { border-color: var(--jm-line); }
+.storefront-page-content .detail-tabs { border-bottom-color: var(--jm-line); }
+.storefront-page-content .detail-tabs button.active { color: var(--jm-wine); border-bottom-color: var(--jm-wine); }
+.storefront-page-content .detail-related { margin-top: 44px; }
+
+/* Cart and checkout: kit's clear item/summary split, calmer panels and visible progress affordances. */
+.storefront-page-content .cart-layout,.storefront-page-content .checkout-layout { grid-template-columns: minmax(0,1fr) minmax(310px,390px); gap: 25px; align-items: start; }
+.storefront-page-content .cart-lines { padding: 20px; border: 1px solid var(--jm-line); border-radius: 10px; }
+.storefront-page-content .cart-table-head { color: #89787a; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; }
+.storefront-page-content .cart-line { min-height: 115px; border-top-color: #eee5da; }
+.storefront-page-content .cart-product b { color: #493136; font-family: "Poppins",sans-serif; font-size: 13px; }
+.storefront-page-content .cart-product small { color: #89787a; }
+.storefront-page-content .quantity-control { border: 1px solid #ddcdb6; border-radius: 7px; background: #fffaf0; }
+.storefront-page-content .quantity-control button { color: var(--jm-wine); }
+.storefront-page-content .order-summary,.storefront-page-content .checkout-summary { position: sticky; top: 20px; padding: 23px; border: 1px solid var(--jm-line); border-radius: 10px; background: var(--jm-paper); }
+.storefront-page-content .order-summary h2,.storefront-page-content .checkout-summary h2 { margin-top: 0; color: #493136; font-family: "Poppins",sans-serif; font-size: 19px; }
+.storefront-page-content .summary-total { margin-top: 17px; padding-top: 16px; border-top: 1px solid var(--jm-line); color: #493136; font-size: 16px; }
+.storefront-page-content .summary-total b { color: var(--jm-wine); font-size: 22px; }
+.storefront-page-content .checkout-link { width: 100%; margin: 16px 0 8px; }
+.storefront-page-content .secure-note { margin-top: 14px; padding: 11px; border-radius: 7px; background: #f7efdf; color: #735c5f; font-size: 11px; text-align: center; }
+.storefront-page-content .checkout-layout { grid-template-columns: minmax(0,1fr) minmax(300px,380px); }
+.storefront-page-content .checkout-fields { gap: 18px; }
+.storefront-page-content .checkout-panel { padding: 23px; border: 1px solid var(--jm-line); border-radius: 10px; background: var(--jm-paper); }
+.storefront-page-content .checkout-panel h2 { margin-top: 0; color: #493136; font-family: "Poppins",sans-serif; font-size: 18px; }
+.storefront-page-content .checkout-panel .eyebrow { color: #8b5b62; }
+.storefront-page-content .form-grid { gap: 16px; }
+.storefront-page-content .payment-choice { border-color: var(--jm-line); border-radius: 8px; }
+.storefront-page-content .payment-choice:has(input:checked) { border-color: var(--jm-wine); background: #fbf4e8; box-shadow: 0 0 0 2px #80001f12; }
+.storefront-page-content .checkout-item { border-bottom-color: #eee5da; }
+.storefront-page-content .cart-empty { max-width: 680px; margin: 40px auto; padding: 50px 25px; }
+.storefront-page-content .confirmation-card { max-width: 760px; margin: 24px auto; padding: clamp(26px,5vw,52px); text-align: center; }
+.storefront-page-content .confirmation-card h1 { color: #493136; font-family: "Poppins",sans-serif; font-size: clamp(26px,3vw,36px); }
+.storefront-page-content .confirmation-reference { background: #f7efdf; color: var(--jm-wine); }
+
+/* Account, authentication, contact, seller and informational content pages. */
+.storefront-page-content .auth-page { min-height: 66vh; padding: 56px 18px; background: var(--jm-canvas); }
+.storefront-page-content .auth-card { width: min(100%,480px); padding: clamp(26px,4vw,42px); border: 1px solid var(--jm-line); border-radius: 12px; background: var(--jm-paper); box-shadow: 0 16px 44px #502b3210; }
+.storefront-page-content .auth-card > .brand-lockup,.storefront-page-content .auth-card > .wordmark { margin-bottom: 28px; }
+.storefront-page-content .auth-card > h1 { color: #38272d; font-family: "Poppins",sans-serif; font-size: 30px; }
+.storefront-page-content .auth-card > p { color: #76686a; line-height: 1.7; }
+.storefront-page-content .auth-form { gap: 17px; }
+.storefront-page-content .auth-form label,.storefront-page-content .account-form label { color: #59494c; font-size: 12px; }
+.storefront-page-content .auth-form :is(input,button) { min-height: 48px; }
+.storefront-page-content .auth-switch a,.storefront-page-content .account-links a { color: var(--jm-wine); font-weight: 700; }
+.storefront-page-content .account-layout { grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 20px; }
+.storefront-page-content .account-panel { padding: 23px; border: 1px solid var(--jm-line); border-radius: 10px; }
+.storefront-page-content .account-panel h2 { margin-top: 0; color: #493136; font-family: "Poppins",sans-serif; font-size: 19px; }
+.storefront-page-content .account-order { border-color: #eee4d7; }
+.storefront-page-content .account-order-item b { color: var(--jm-ink); }
+.storefront-page-content .contact-layout { grid-template-columns: minmax(0,1.35fr) minmax(280px,.8fr); gap: 22px; }
+.storefront-page-content .contact-form,.storefront-page-content .contact-details { padding: clamp(20px,3vw,30px); border: 1px solid var(--jm-line); border-radius: 10px; }
+.storefront-page-content .contact-form { gap: 16px; }
+.storefront-page-content .contact-form :is(input,select,textarea) { min-height: 46px; border-color: #ddcdb6; border-radius: 7px; background: #fffefa; font-size: 14px; }
+.storefront-page-content .contact-form textarea { min-height: 145px; padding: 13px; }
+.storefront-page-content .contact-details h2 { color: #493136; font-family: "Poppins",sans-serif; font-size: 21px; }
+.storefront-page-content .contact-details p { color: #76686a; font-size: 13px; line-height: 1.75; }
+.storefront-page-content .content-narrow { width: min(820px,100%); margin: 0 auto; }
+.storefront-page-content .content-narrow h2,.storefront-page-content .faq-item h2 { margin-top: 25px; color: #493136; font-family: "Poppins",sans-serif; font-size: 20px; line-height: 1.4; }
+.storefront-page-content .content-narrow p,.storefront-page-content .content-narrow li,.storefront-page-content .faq-item p { color: #6f6063; font-size: 14px; line-height: 1.85; }
+.storefront-page-content .faq-item { margin: 12px 0; padding: 20px 23px; border: 1px solid var(--jm-line); border-radius: 9px; }
+.storefront-page-content .faq-item h2 { margin: 0 0 9px; font-size: 16px; }
+.storefront-page-content .faq-item p { margin: 0; }
+.storefront-page-content .journal-grid,.storefront-page-content .store-directory { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 22px; }
+.storefront-page-content .journal-card,.storefront-page-content .store-directory-card { overflow: hidden; border: 1px solid var(--jm-line); border-radius: 10px; background: var(--jm-paper); box-shadow: var(--shop-shadow); transition: transform .2s ease,box-shadow .2s ease; }
+.storefront-page-content .journal-card:hover,.storefront-page-content .store-directory-card:hover { transform: translateY(-3px); box-shadow: 0 14px 30px #502b3217; }
+.storefront-page-content .journal-art { min-height: 190px; background: #f3e6d1; color: var(--jm-wine); }
+.storefront-page-content .journal-info { padding: 20px; }
+.storefront-page-content .journal-info small { color: #89787a; font-size: 11px; }
+.storefront-page-content .journal-info h2 { color: #493136; font-family: "Poppins",sans-serif; font-size: 18px; line-height: 1.4; }
+.storefront-page-content .journal-info p { color: #76686a; font-size: 13px; line-height: 1.7; }
+.storefront-page-content .journal-info a { color: var(--jm-wine); font-size: 12px; font-weight: 700; }
+.storefront-page-content .journal-story { padding: 28px; border: 1px solid var(--jm-line); border-radius: 10px; background: var(--jm-paper); box-shadow: var(--shop-shadow); }
+.storefront-page-content .journal-story h1 { color: #38272d; font-family: "Poppins",sans-serif; font-size: clamp(29px,4vw,44px); line-height: 1.24; }
+.storefront-page-content .journal-story .story-intro { color: #655457; font-size: 17px; line-height: 1.75; }
+.storefront-page-content .journal-story > p { color: #76686a; font-size: 14px; line-height: 1.85; }
+.storefront-page-content .story-art { min-height: 270px; border-radius: 8px; background: #f3e6d1; color: var(--jm-wine); }
+.storefront-page-content .store-cover { background: #f2e3ce; }
+.storefront-page-content .store-card-info { padding: 18px; }
+.storefront-page-content .store-card-info h2 { color: #493136; font-family: "Poppins",sans-serif; font-size: 17px; }
+.storefront-page-content .seller-signup-callout { margin-top: 30px; padding: 28px; border: 1px solid #ddc7a6; border-radius: 10px; background: #f8edda; }
+.storefront-page-content .seller-application { grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr); gap: 25px; }
+.storefront-page-content .application-copy { padding: 12px 0; }
+.storefront-page-content .application-copy h2 { color: #493136; font-family: "Poppins",sans-serif; font-size: 24px; }
+.storefront-page-content .application-copy p,.storefront-page-content .application-copy li { color: #6f6063; font-size: 14px; line-height: 1.8; }
+.storefront-page-content .seller-application .checkout-panel { padding: 26px; }
+.storefront-page-content .seller-hero { padding: clamp(25px,4vw,44px); border-color: var(--jm-line); border-radius: 12px; background: linear-gradient(135deg,#fffdf8 0%,#f3e6d1 100%); }
+.storefront-page-content .seller-hero h1 { color: #38272d; font-family: "Poppins",sans-serif; font-size: clamp(30px,4vw,44px); }
+.storefront-page-content .seller-trust-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+.storefront-page-content .seller-trust-row > span { padding: 9px 13px; border: 1px solid var(--jm-line); border-radius: 999px; background: var(--jm-paper); color: #655154; font-size: 12px; }
+
+/* Responsive: maintain the same kit hierarchy, stack columns without losing controls. */
+@media (max-width: 1080px) {
+  .site-header-inner { grid-template-columns: 156px minmax(200px,1fr) auto; gap: 10px; }
+  .brand-logo { width: 152px; }
+  .advanced-search { display: none; }
+  .site-nav-links { gap: 16px; }
+  .storefront-page-content .store-home-layout { grid-template-columns: 205px minmax(0,1fr); gap: 16px; }
+  .storefront-page-content .product-detail { grid-template-columns: minmax(0,1fr) minmax(330px,.9fr); gap: 23px; }
+  .storefront-page-content .product-art { min-height: 170px; }
+}
+@media (max-width: 850px) {
+  .site-topline-inner,.site-header-inner,.site-nav-inner,.site-footer .footer-main,.site-footer .footer-bottom { width: calc(100% - 32px); }
+  .site-header-inner { grid-template-columns: 150px minmax(0,1fr) auto; }
+  .market-top-links { gap: 12px; }
+  .market-top-links > a:nth-child(2),.market-top-links > a:nth-child(3) { display: none; }
+  .site-nav-inner { gap: 14px; }
+  .site-nav-links { gap: 14px; }
+  .site-nav-links a { font-size: 10px; }
+  .storefront-page-content .store-home-layout { width: calc(100% - 32px); grid-template-columns: minmax(0,1fr); }
+  .storefront-page-content .store-home-sidebar { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); align-items: start; }
+  .storefront-page-content .store-home-main { grid-row: 1; }
+  .storefront-page-content .listing-layout { grid-template-columns: 1fr; }
+  .storefront-page-content .filter-panel { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px 18px; }
+  .storefront-page-content .filter-panel > h2 { grid-column: 1/-1; }
+  .storefront-page-content .product-detail { grid-template-columns: 1fr; }
+  .storefront-page-content .detail-copy { position: static; }
+  .storefront-page-content .detail-gallery .product-art-large { min-height: 390px; }
+  .storefront-page-content .cart-layout,.storefront-page-content .checkout-layout { grid-template-columns: minmax(0,1fr) 320px; gap: 16px; }
+  .storefront-page-content .contact-layout { grid-template-columns: minmax(0,1fr) minmax(240px,.8fr); }
+}
+@media (max-width: 700px) {
+  .site-topline { display: none; }
+  .site-header-inner { grid-template-columns: 1fr auto; padding: 12px 0; }
+  .store-search { grid-column: 1/-1; grid-row: 2; height: 44px; grid-template-columns: 112px minmax(0,1fr) 48px; }
+  .store-search select { padding: 0 7px; font-size: 10px; }
+  .store-search button span { display: none; }
+  .store-search button { border-radius: 0 6px 6px 0; }
+  .header-actions { grid-column: 2; grid-row: 1; }
+  .site-nav-inner { width: calc(100% - 22px); }
+  .storefront-page-content .store-page,.storefront-page-content .site-container { width: calc(100% - 32px); }
+  .storefront-page-content .page-surface { padding: 25px 0 48px; }
+  .storefront-page-content .page-title { margin-bottom: 22px; }
+  .storefront-page-content .page-title h1 { font-size: clamp(25px,7vw,32px); }
+  .storefront-page-content .store-home-sidebar { grid-template-columns: 1fr; }
+  .storefront-page-content .store-home-main { gap: 14px; }
+  .storefront-page-content .store-hero-carousel { min-height: 305px; }
+  .storefront-page-content .store-hero-image { left: 30%; width: 70%; }
+  .storefront-page-content .store-hero-content { width: 78%; padding-left: 22px; }
+  .storefront-page-content .store-hero-content h1 { font-size: clamp(25px,7vw,34px); }
+  .storefront-page-content .store-hero-content p { max-width: 260px; font-size: 13px; }
+  .storefront-page-content :is(.store-home-departments,.store-home-products,.store-home-special-products,.store-home-journal,.store-home-stores) { padding: 15px; }
+  .storefront-page-content .home-section-head h2 { font-size: 18px; }
+  .storefront-page-content .home-category-circles { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .storefront-page-content .home-category-circle { min-height: 95px; font-size: 10px; }
+  .storefront-page-content .home-category-circle-art { height: 48px; }
+  .storefront-page-content .product-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 11px; }
+  .storefront-page-content .product-art { min-height: clamp(135px,45vw,190px); }
+  .storefront-page-content .product-details { min-height: 138px; gap: 5px; padding: 11px; }
+  .storefront-page-content .product-name { min-height: 40px; font-size: 12px; }
+  .storefront-page-content .add-button { min-height: 38px; }
+  .storefront-page-content .listing-results-heading { flex-wrap: wrap; gap: 10px; }
+  .storefront-page-content .filter-panel { grid-template-columns: 1fr; }
+  .storefront-page-content .cart-layout,.storefront-page-content .checkout-layout,.storefront-page-content .account-layout,.storefront-page-content .contact-layout,.storefront-page-content .seller-application { grid-template-columns: 1fr; }
+  .storefront-page-content .order-summary,.storefront-page-content .checkout-summary { position: static; }
+  .storefront-page-content .cart-lines { padding: 13px; }
+  .storefront-page-content .cart-table-head { display: none; }
+  .storefront-page-content .cart-line { grid-template-columns: minmax(0,1fr) auto; gap: 10px; padding: 13px 0; }
+  .storefront-page-content .cart-product { grid-column: 1/-1; }
+  .storefront-page-content .cart-line-total { justify-self: end; }
+  .storefront-page-content .checkout-panel,.storefront-page-content .account-panel { padding: 18px; }
+  .storefront-page-content .journal-grid,.storefront-page-content .store-directory { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
+  .storefront-page-content .journal-art { min-height: 140px; }
+  .storefront-page-content .journal-info { padding: 14px; }
+  .storefront-page-content .journal-info h2 { font-size: 15px; }
+  .storefront-page-content .journal-info p { font-size: 12px; }
+  .storefront-page-content .content-narrow { width: 100%; }
+  .storefront-page-content .journal-story { padding: 20px; }
+  .site-footer .footer-main { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 25px 18px; }
+  .site-footer .footer-brand { grid-column: 1/-1; }
+}
+@media (max-width: 480px) {
+  .site-header-inner,.site-topline-inner,.site-nav-inner,.site-footer .footer-main,.site-footer .footer-bottom { width: calc(100% - 24px); }
+  .brand-logo { width: 140px; max-height: 38px; }
+  .header-actions { gap: 10px; }
+  .storefront-page-content .store-page,.storefront-page-content .site-container { width: calc(100% - 24px); }
+  .storefront-page-content .store-hero-carousel { min-height: 270px; }
+  .storefront-page-content .store-hero-image { left: 25%; width: 75%; }
+  .storefront-page-content .store-hero-content { width: 83%; padding-left: 17px; }
+  .storefront-page-content .home-category-circles { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .storefront-page-content .listing-department-strip { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 7px; }
+  .storefront-page-content .product-grid { gap: 9px; }
+  .storefront-page-content .product-art { min-height: 132px; }
+  .storefront-page-content .product-details { min-height: 135px; padding: 9px; }
+  .storefront-page-content .product-name { font-size: 11px; }
+  .storefront-page-content .price-line { font-size: 12px; }
+  .storefront-page-content .detail-gallery { padding: 10px; }
+  .storefront-page-content .detail-gallery .product-art-large { min-height: 280px; }
+  .storefront-page-content .detail-copy { padding: 18px; }
+  .storefront-page-content .journal-grid,.storefront-page-content .store-directory { grid-template-columns: 1fr; }
+  .storefront-page-content .journal-art { min-height: 185px; }
+  .storefront-page-content .form-grid { grid-template-columns: 1fr; }
+  .storefront-page-content .form-grid .span-two { grid-column: auto; }
+  .storefront-page-content .confirmation-actions { flex-direction: column; align-items: stretch; }
+  .storefront-page-content .confirmation-actions .button-primary { width: 100%; }
+  .site-footer .footer-bottom { flex-wrap: wrap; gap: 8px 16px; padding: 13px 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .storefront-page-content *, .site-header *, .site-footer * { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+}
+
+/* Compact, clear zero-inventory states in homepage collection slots. */
+.storefront-page-content .market-home-shell :is(.store-home-products,.store-home-special-products) > .empty-state {
+  min-height: 168px;
+  padding: 24px 18px;
+  border: 1px dashed #d8c6ab;
+  border-radius: 8px;
+  background: #fffaf1;
+  box-shadow: none;
+}
+.storefront-page-content .market-home-shell :is(.store-home-products,.store-home-special-products) > .empty-state > span { font-size: 28px; }
+.storefront-page-content .market-home-shell :is(.store-home-products,.store-home-special-products) > .empty-state h2 { font-size: 17px; }
+.storefront-page-content .market-home-shell :is(.store-home-products,.store-home-special-products) > .empty-state p { margin: 3px 0 12px; font-size: 12px; }
+.storefront-page-content .market-home-shell :is(.store-home-products,.store-home-special-products) > .empty-state .button-primary { min-height: 38px; padding: 9px 16px; font-size: 11px; }
+
+
+/* Supplied grocery-store reference: centered frame, red accents, mint produce hero, and black footer. */
+.grocery-storefront-frame {
+  --green: #159b8c;
+  --grocer-red: #e51f32;
+  --ink: #171d1c;
+  --muted: #6a7371;
+  --line: #e5e8e7;
+  --surface: #ffffff;
+  width: min(1120px, calc(100% - 96px));
+  min-height: 100vh;
+  margin: 0 auto;
+  color: var(--ink);
+  background: #fff;
+  font-family: Roboto, Arial, sans-serif;
+}
+body:has(.grocery-storefront-frame) { background: #171717; }
+.grocery-storefront-frame * { box-sizing: border-box; }
+.grocery-storefront-frame a { color: inherit; text-decoration: none; }
+.grocery-storefront-frame button { font: inherit; cursor: pointer; }
+.grocery-storefront-frame :is(a,button,input,select,textarea):focus-visible { outline: 3px solid #65b9a9; outline-offset: 2px; }
+
+/* Header matches the compact white navigation in the reference. */
+.grocery-storefront-frame .grocery-header { position: relative; z-index: 10; border: 0; background: #fff; box-shadow: none; font-family: Roboto,Arial,sans-serif; }
+.grocery-storefront-frame .grocery-ribbon { height: 21px; display: grid; place-items: center; background: var(--grocer-red); color: #fff; font-size: 9px; letter-spacing: .15px; }
+.grocery-storefront-frame .grocery-nav-wrap { position: relative; width: calc(100% - 12%); max-width: 960px; min-height: 43px; margin: 0 auto; display: grid; grid-template-columns: auto auto minmax(0,1fr) auto; align-items: center; gap: 17px; }
+.grocery-storefront-frame .grocery-brand { display: inline-flex; align-items: center; gap: 3px; white-space: nowrap; color: #161b1b; font-size: 17px; font-weight: 700; letter-spacing: -.5px; }
+.grocery-storefront-frame .grocery-tomato { font-size: 15px; line-height: 1; }
+.grocery-storefront-frame .grocery-category-wrap { position: relative; }
+.grocery-storefront-frame .grocery-category-button { height: 30px; min-width: 76px; padding: 0 10px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 0; border-radius: 18px; background: #171a19; color: #fff; font-size: 11px; white-space: nowrap; }
+.grocery-storefront-frame .grocery-category-button span { font-size: 13px; }
+.grocery-storefront-frame .grocery-category-menu { position: absolute; top: calc(100% + 8px); left: 0; width: 240px; max-height: 65vh; overflow: auto; padding: 12px; border: 1px solid #e6e8e6; border-radius: 7px; background: #fff; box-shadow: 0 12px 30px #0002; }
+.grocery-storefront-frame .grocery-category-menu strong { display: block; padding: 7px 9px 10px; font-size: 12px; }
+.grocery-storefront-frame .grocery-category-menu a { display: block; padding: 8px 9px; border-top: 1px solid #f1f2f1; color: #444; font-size: 11px; }
+.grocery-storefront-frame .grocery-category-menu a:hover { background: #eef9f6; color: #117f72; }
+.grocery-storefront-frame .grocery-nav-links { display: flex; align-items: center; justify-content: center; gap: clamp(13px,2.4vw,30px); white-space: nowrap; }
+.grocery-storefront-frame .grocery-nav-links a { color: #171b1b; font-size: 11px; font-weight: 500; }
+.grocery-storefront-frame .grocery-nav-links a:hover { color: var(--green); }
+.grocery-storefront-frame .grocery-header-actions { display: flex; align-items: center; gap: 12px; }
+.grocery-storefront-frame .grocery-header-actions > a,.grocery-storefront-frame .grocery-mobile-toggle { position: relative; width: 20px; height: 25px; display: inline-flex; align-items: center; justify-content: center; border: 0; background: none; color: #111; }
+.grocery-storefront-frame .grocery-header-actions svg { width: 17px; height: 17px; }
+.grocery-storefront-frame .grocery-header-actions i { position: absolute; top: -1px; right: -2px; width: 13px; height: 13px; display: grid; place-items: center; border-radius: 50%; background: var(--grocer-red); color: #fff; font-size: 8px; font-style: normal; }
+.grocery-storefront-frame .grocery-cart-action small { display: none; }
+.grocery-storefront-frame .grocery-mobile-toggle { display: none; font-size: 18px; }
+
+/* Home: green hero and the same section order and card proportions as the reference. */
+.grocery-storefront-frame .storefront-page-content { min-height: 52vh; color: var(--ink); background: #fff; font-family: Roboto,Arial,sans-serif; font-size: 13px; line-height: 1.45; }
+.grocery-storefront-frame .grocery-home { background: #fff; }
+.grocery-storefront-frame .grocery-hero { position: relative; display: grid; grid-template-columns: 1fr 1fr; align-items: center; overflow: hidden; aspect-ratio: 2.58; min-height: 230px; background: #b6e8d9; }
+.grocery-storefront-frame .grocery-hero-image { height: 100%; min-width: 0; display: flex; align-items: flex-end; justify-content: center; overflow: hidden; }
+.grocery-storefront-frame .grocery-hero-image img { display: block; width: min(88%,360px); height: 100%; object-fit: contain; object-position: center bottom; }
+.grocery-storefront-frame .grocery-hero-copy { width: min(88%,390px); padding: 22px 14px 20px 0; }
+.grocery-storefront-frame .grocery-hero-copy h1 { margin: 0 0 9px; color: #171d1c; font-size: clamp(23px,3.7vw,31px); font-weight: 700; letter-spacing: -.55px; line-height: 1.28; }
+.grocery-storefront-frame .grocery-hero-copy p { margin: 0 0 12px; color: #303b38; font-size: 11px; }
+.grocery-storefront-frame .grocery-hero-copy .newsletter-band-form { position: relative; display: flex; width: min(100%,235px); height: 29px; padding: 2px; border: 1px solid #dce5e2; border-radius: 18px; background: #fff; }
+.grocery-storefront-frame .grocery-hero-copy .newsletter-band-form input { min-width: 0; flex: 1; height: 24px; padding: 0 11px; border: 0; border-radius: 15px; outline: 0; background: transparent; color: #333; font-size: 10px; }
+.grocery-storefront-frame .grocery-hero-copy .newsletter-band-form button { min-width: 84px; height: 24px; padding: 0 10px; border: 0; border-radius: 15px; background: #168e7e; color: #fff; font-size: 9px; white-space: nowrap; }
+.grocery-storefront-frame .grocery-hero-copy .newsletter-band-form button:hover { background: #10786b; }
+.grocery-storefront-frame .grocery-hero-copy .newsletter-band-form small { display: none; }
+.grocery-storefront-frame .grocery-home-content { width: 80%; max-width: 1040px; margin: 0 auto; padding: 24px 0 31px; display: flex; flex-direction: column; gap: 22px; }
+.grocery-storefront-frame .grocery-home-content h2 { margin: 0; color: #202524; font-size: 18px; font-weight: 700; line-height: 1.3; }
+.grocery-storefront-frame .grocery-category-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; margin-top: 8px; }
+.grocery-storefront-frame .grocery-category-card { min-height: 130px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; border: 1px solid #eeece1; border-radius: 9px; background: #f2f0e4; color: #151918; transition: transform .16s ease,box-shadow .16s ease; }
+.grocery-storefront-frame .grocery-category-card:hover { transform: translateY(-2px); box-shadow: 0 6px 15px #203d3117; }
+.grocery-storefront-frame .grocery-category-card > span { font-size: 47px; line-height: 1.1; }
+.grocery-storefront-frame .grocery-category-card b { font-size: 15px; font-weight: 500; }
+.grocery-storefront-frame .grocery-products-section { min-width: 0; }
+.grocery-storefront-frame .grocery-section-heading { min-height: 25px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.grocery-storefront-frame .grocery-section-heading h2 { font-size: 18px; }
+.grocery-storefront-frame .grocery-section-arrows { display: flex; gap: 7px; }
+.grocery-storefront-frame .grocery-section-arrows button { width: 24px; height: 24px; padding: 0; border: 1px solid #e8e9e7; border-radius: 5px; background: #f8f8f6; color: #38413e; font-size: 17px; line-height: 1; }
+.grocery-storefront-frame .grocery-section-arrows button:hover { background: #e6f6f2; border-color: #acdace; }
+.grocery-storefront-frame .grocery-popular-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 11px; }
+.grocery-storefront-frame .grocery-product-card { position: relative; min-width: 0; overflow: hidden; border: 1px solid #eceeed; border-radius: 8px; background: #f5f6f6; box-shadow: 0 3px 8px #00000009; }
+.grocery-storefront-frame .grocery-product-art { height: 102px; display: grid; place-items: center; overflow: hidden; background: #f5f6f6; }
+.grocery-storefront-frame .grocery-product-art > .product-art { width: 100%; height: 100%; min-height: 0; display: grid; place-items: center; background: transparent; }
+.grocery-storefront-frame .grocery-product-art .product-photo { width: 90%; height: 88%; object-fit: contain; }
+.grocery-storefront-frame .grocery-product-art .product-symbol { font-size: 47px; }
+.grocery-storefront-frame .grocery-product-art .visually-hidden { display: none; }
+.grocery-storefront-frame .grocery-heart { position: absolute; top: 7px; right: 7px; z-index: 2; width: 22px; height: 22px; padding: 0; display: grid; place-items: center; border: 0; border-radius: 50%; background: #ffffffd9; color: #555; font-size: 14px; opacity: 0; }
+.grocery-storefront-frame .grocery-product-card:hover .grocery-heart,.grocery-storefront-frame .grocery-heart.is-saved { opacity: 1; }
+.grocery-storefront-frame .grocery-heart.is-saved { color: #df2637; }
+.grocery-storefront-frame .grocery-product-details { padding: 7px 8px 8px; text-align: center; }
+.grocery-storefront-frame .grocery-product-name { display: block; overflow: hidden; color: #202524; font-size: 11px; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+.grocery-storefront-frame .grocery-price { min-height: 17px; margin-top: 2px; display: flex; align-items: baseline; justify-content: center; gap: 5px; color: #202524; font-size: 11px; }
+.grocery-storefront-frame .grocery-price b { font-weight: 700; }
+.grocery-storefront-frame .grocery-price del { color: #9b9d9c; font-size: 9px; }
+.grocery-storefront-frame .grocery-add-button { width: 100%; height: 23px; margin-top: 4px; border: 0; border-radius: 15px; background: #159a89; color: #fff; font-size: 10px; }
+.grocery-storefront-frame .grocery-add-button:hover { background: #117b6e; }
+.grocery-storefront-frame .grocery-best-sellers-grid { display: grid; grid-template-columns: 1.95fr 1fr 1fr; gap: 11px; }
+ .grocery-storefront-frame .grocery-best-sellers-promo { min-height: 154px; padding: 15px 17px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 10px; overflow: hidden; border-radius: 8px; background: #c9ecd9 url('/images/grocery-best-sellers.webp') center/cover no-repeat; }
+.grocery-storefront-frame .grocery-best-sellers-promo span { color: #152d24; font-family: Georgia,serif; font-size: clamp(17px,2.6vw,26px); font-style: italic; line-height: 1.15; }
+.grocery-storefront-frame .grocery-best-sellers-promo b { color: #187b6c; font-size: 11px; }
+.grocery-storefront-frame .grocery-best-sellers-promo i { font-style: normal; }
+.grocery-storefront-frame .grocery-best-sellers-grid .grocery-product-card { min-height: 154px; display: flex; flex-direction: column; }
+.grocery-storefront-frame .grocery-best-sellers-grid .grocery-product-art { height: 82px; }
+.grocery-storefront-frame .grocery-best-sellers-grid .grocery-product-details { margin-top: auto; text-align: left; }
+.grocery-storefront-frame .grocery-best-sellers-grid .grocery-price { justify-content: flex-start; }
+.grocery-storefront-frame .grocery-best-sellers-grid .grocery-add-button { margin-top: 3px; }
+.grocery-storefront-frame .grocery-deals-section { margin-top: 1px; }
+.grocery-storefront-frame .grocery-deal-grid { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 9px; }
+.grocery-storefront-frame .grocery-product-card.is-deal { min-height: 133px; border-color: #cce8de; background: #b8ead9; box-shadow: none; }
+.grocery-storefront-frame .grocery-product-card.is-deal .grocery-product-art { height: 75px; background: transparent; }
+.grocery-storefront-frame .grocery-product-card.is-deal .product-art { background: transparent; }
+.grocery-storefront-frame .grocery-product-card.is-deal .grocery-product-art .product-symbol { font-size: 37px; }
+.grocery-storefront-frame .grocery-product-card.is-deal .grocery-product-details { padding: 3px 6px 6px; text-align: left; }
+.grocery-storefront-frame .grocery-product-card.is-deal .grocery-product-name { display: none; }
+.grocery-storefront-frame .grocery-product-card.is-deal .grocery-price { justify-content: space-between; margin-top: 0; font-size: 10px; }
+.grocery-storefront-frame .grocery-product-card.is-deal .grocery-price del { display: none; }
+.grocery-storefront-frame .grocery-product-card.is-deal .grocery-add-button { display: none; }
+.grocery-storefront-frame .grocery-deal-timer { height: 15px; display: flex; justify-content: center; align-items: center; gap: 2px; color: #fff; }
+.grocery-storefront-frame .grocery-deal-timer span { width: 16px; height: 13px; display: grid; place-items: center; border-radius: 2px; background: #e43845; font-size: 7px; }
+.grocery-storefront-frame .grocery-deal-timer i { color: #c52532; font-size: 8px; font-style: normal; }
+.grocery-storefront-frame .grocery-countdown-copy { margin: 6px 0 0; color: #737d79; font-size: 10px; text-align: right; }
+.grocery-storefront-frame .grocery-countdown-copy b { color: #128576; font-variant-numeric: tabular-nums; }
+
+/* Shared public routes reuse the same white, mint and teal system; admin remains outside the frame. */
+.grocery-storefront-frame .page-surface { min-height: 57vh; padding: 25px 0 55px; background: #fff; }
+.grocery-storefront-frame .store-page,.grocery-storefront-frame .site-container { width: 80%; max-width: 1040px; margin: 0 auto; }
+.grocery-storefront-frame .breadcrumbs { margin: 0 0 13px; color: #77807d; font-size: 11px; }
+.grocery-storefront-frame .breadcrumbs a:hover,.grocery-storefront-frame .text-link { color: #168e7e; }
+.grocery-storefront-frame .page-title { margin: 0 0 23px; padding-bottom: 13px; border-bottom: 1px solid #edf0ee; }
+.grocery-storefront-frame .page-title > span,.grocery-storefront-frame .eyebrow { color: #159585; font-size: 10px; letter-spacing: .1em; }
+.grocery-storefront-frame .page-title h1 { margin: 0 0 7px; color: #1c2221; font-size: clamp(25px,3.2vw,34px); letter-spacing: -.6px; }
+.grocery-storefront-frame .page-title p { color: #68716f; font-size: 13px; }
+.grocery-storefront-frame .button-primary,.grocery-storefront-frame .button-dark { min-height: 40px; height: auto; padding: 10px 17px; border: 0; border-radius: 6px; background: #159a89; color: #fff; font-size: 12px; }
+.grocery-storefront-frame .button-primary:hover { background: #117b6e; }
+.grocery-storefront-frame .button-dark { background: #202524; }
+.grocery-storefront-frame .storefront-page-content :is(input:not([type=checkbox]):not([type=radio]),select,textarea) { min-height: 40px; border: 1px solid #dfe5e3; border-radius: 5px; background: #fff; color: #222; font-size: 13px; }
+.grocery-storefront-frame .storefront-page-content textarea { min-height: 110px; padding: 10px 12px; }
+.grocery-storefront-frame .storefront-page-content :is(input,select,textarea):focus { border-color: #57bbaa; box-shadow: 0 0 0 2px #159a891a; outline: none; }
+.grocery-storefront-frame .storefront-page-content label { color: #505a57; font-size: 12px; }
+.grocery-storefront-frame .storefront-page-content :is(.filter-panel,.detail-gallery,.detail-copy,.cart-lines,.order-summary,.checkout-panel,.checkout-summary,.contact-form,.contact-details,.account-panel,.auth-card,.journal-card,.store-directory-card,.faq-item,.confirmation-card,.seller-application) { border-color: #e4e9e7; border-radius: 7px; background: #fff; box-shadow: 0 3px 12px #172e2410; }
+.grocery-storefront-frame .product-card { border: 1px solid #e7ecea; border-radius: 7px; box-shadow: 0 2px 8px #172e240c; }
+.grocery-storefront-frame .product-card:hover { border-color: #b5dcd2; box-shadow: 0 8px 20px #172e2418; }
+.grocery-storefront-frame .add-button { border: 0; border-radius: 5px; background: #159a89; color: #fff; }
+.grocery-storefront-frame .add-button:hover { background: #117b6e; }
+.grocery-storefront-frame .filter-panel h2,.grocery-storefront-frame .filter-group h3,.grocery-storefront-frame .detail-copy h1,.grocery-storefront-frame .checkout-panel h2,.grocery-storefront-frame .order-summary h2 { color: #1e2623; }
+.grocery-storefront-frame .listing-department-strip button,.grocery-storefront-frame .home-category-circle { border-radius: 6px; }
+.grocery-storefront-frame .listing-department-strip button.selected,.grocery-storefront-frame .filter-option.selected { background: #159a89; color: #fff; }
+.grocery-storefront-frame .detail-tabs button.active { color: #138d7e; border-bottom-color: #138d7e; }
+.grocery-storefront-frame .auth-page { background: #f5f7f6; }
+.grocery-storefront-frame .auth-card { border: 1px solid #e5e9e7; box-shadow: 0 10px 26px #182f2412; }
+.grocery-storefront-frame .account-panel h2,.grocery-storefront-frame .contact-details h2,.grocery-storefront-frame .journal-info h2 { color: #1c2421; }
+.grocery-storefront-frame .journal-art,.grocery-storefront-frame .story-art { background: #e0f4ec; color: #138c7d; }
+.grocery-storefront-frame .seller-hero { border-radius: 8px; background: linear-gradient(135deg,#e4f5ed,#f9fcfa); }
+.grocery-storefront-frame .store-cover { background: #e6f5ee; }
+.grocery-storefront-frame .empty-state { border: 1px solid #e7ecea; border-radius: 7px; background: #f8faf9; box-shadow: none; }
+
+/* Reference footer: four dark columns and a full-width red copyright bar. */
+.grocery-storefront-frame .grocery-footer { margin: 0; padding: 0; border: 0; background: #111313; color: #ddd; font-family: Roboto,Arial,sans-serif; }
+.grocery-storefront-frame .grocery-footer-grid { width: 80%; max-width: 1040px; min-height: 116px; margin: 0 auto; padding: 22px 0 16px; display: grid; grid-template-columns: 1.45fr 1fr 1fr 1fr; gap: clamp(14px,4vw,45px); }
+.grocery-storefront-frame .grocery-footer-grid > div { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+.grocery-storefront-frame .grocery-footer .grocery-brand { color: #f4f4f4; font-size: 17px; }
+.grocery-storefront-frame .grocery-footer-brand p { max-width: 205px; margin: 4px 0 0; color: #c6c8c7; font-size: 9px; line-height: 1.6; }
+.grocery-storefront-frame .grocery-footer-brand small { color: #9fa5a2; font-size: 8px; }
+.grocery-storefront-frame .grocery-footer-column b { margin-bottom: 3px; color: #f1f2f1; font-size: 10px; font-weight: 700; }
+.grocery-storefront-frame .grocery-footer-column a { color: #c2c6c4; font-size: 9px; }
+.grocery-storefront-frame .grocery-footer-column a:hover { color: #fff; }
+.grocery-storefront-frame .grocery-social-icons,.grocery-storefront-frame .grocery-payment-icons { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+.grocery-storefront-frame .grocery-social-icons span { width: 17px; height: 17px; display: grid; place-items: center; border-radius: 50%; background: #243e89; color: #fff; font-size: 9px; font-weight: 700; }
+.grocery-storefront-frame .grocery-social-icons span:nth-child(2) { background: #158eae; }
+.grocery-storefront-frame .grocery-social-icons span:nth-child(3) { background: #bc4d83; }
+.grocery-storefront-frame .grocery-social-icons span:nth-child(4) { background: #cf332f; }
+.grocery-storefront-frame .grocery-payment-icons span { min-width: 25px; height: 14px; padding: 0 3px; display: grid; place-items: center; border-radius: 2px; background: #f5f6f6; color: #172b38; font-size: 6px; font-weight: 700; }
+.grocery-storefront-frame .grocery-copyright { min-height: 24px; display: grid; place-items: center; background: var(--grocer-red); color: #fff; font-size: 8px; }
+
+@media (max-width: 850px) {
+  .grocery-storefront-frame .grocery-nav-wrap { width: calc(100% - 32px); gap: 11px; }
+  .grocery-storefront-frame .grocery-nav-links { gap: 12px; }
+  .grocery-storefront-frame .grocery-nav-links a { font-size: 10px; }
+  .grocery-storefront-frame .grocery-home-content,.grocery-storefront-frame .store-page,.grocery-storefront-frame .site-container,.grocery-storefront-frame .grocery-footer-grid { width: 86%; }
+  .grocery-storefront-frame .grocery-category-card { min-height: 112px; }
+}
+@media (max-width: 650px) {
+  .grocery-storefront-frame { width: 100%; }
+  .grocery-storefront-frame .grocery-nav-wrap { width: calc(100% - 24px); min-height: 49px; grid-template-columns: auto auto 1fr auto; gap: 10px; }
+  .grocery-storefront-frame .grocery-brand { font-size: 15px; }
+  .grocery-storefront-frame .grocery-tomato { font-size: 14px; }
+  .grocery-storefront-frame .grocery-category-button { min-width: 34px; width: 34px; padding: 0; overflow: hidden; gap: 0; font-size: 0; }
+  .grocery-storefront-frame .grocery-category-button span { font-size: 15px; }
+  .grocery-storefront-frame .grocery-nav-links { position: absolute; top: 100%; right: 0; left: 0; z-index: 10; display: none; padding: 11px 13px; flex-wrap: wrap; justify-content: flex-start; border-top: 1px solid #eee; background: #fff; box-shadow: 0 8px 14px #0001; }
+  .grocery-storefront-frame .grocery-nav-links.is-open { display: flex; }
+  .grocery-storefront-frame .grocery-nav-links a { padding: 5px 2px; font-size: 11px; }
+  .grocery-storefront-frame .grocery-header-actions { gap: 9px; }
+  .grocery-storefront-frame .grocery-header-actions > a,.grocery-storefront-frame .grocery-mobile-toggle { width: 18px; }
+  .grocery-storefront-frame .grocery-mobile-toggle { display: inline-flex; }
+  .grocery-storefront-frame .grocery-hero { grid-template-columns: 1fr 1.03fr; aspect-ratio: 1.7; min-height: 195px; }
+  .grocery-storefront-frame .grocery-hero-image img { width: 100%; }
+  .grocery-storefront-frame .grocery-hero-copy { width: 100%; padding: 12px 10px 12px 0; }
+  .grocery-storefront-frame .grocery-hero-copy h1 { margin-bottom: 7px; font-size: clamp(18px,5.1vw,25px); letter-spacing: -.4px; }
+  .grocery-storefront-frame .grocery-hero-copy p { margin-bottom: 9px; font-size: 9px; }
+  .grocery-storefront-frame .grocery-hero-copy .newsletter-band-form { width: 100%; height: 27px; }
+  .grocery-storefront-frame .grocery-hero-copy .newsletter-band-form input { font-size: 8px; }
+  .grocery-storefront-frame .grocery-hero-copy .newsletter-band-form button { min-width: 65px; padding: 0 5px; font-size: 8px; }
+  .grocery-storefront-frame .grocery-home-content { width: 90%; padding: 19px 0 25px; gap: 18px; }
+  .grocery-storefront-frame .grocery-home-content h2,.grocery-storefront-frame .grocery-section-heading h2 { font-size: 16px; }
+  .grocery-storefront-frame .grocery-category-grid { gap: 8px; margin-top: 7px; }
+  .grocery-storefront-frame .grocery-category-card { min-height: 90px; gap: 3px; }
+  .grocery-storefront-frame .grocery-category-card > span { font-size: 33px; }
+  .grocery-storefront-frame .grocery-category-card b { font-size: 10px; }
+  .grocery-storefront-frame .grocery-popular-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+  .grocery-storefront-frame .grocery-product-art { height: 90px; }
+  .grocery-storefront-frame .grocery-product-name { font-size: 10px; }
+  .grocery-storefront-frame .grocery-best-sellers-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .grocery-storefront-frame .grocery-best-sellers-promo { grid-column: 1/-1; min-height: 130px; }
+  .grocery-storefront-frame .grocery-best-sellers-grid .grocery-product-card { min-height: 145px; }
+  .grocery-storefront-frame .grocery-deal-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+  .grocery-storefront-frame .grocery-product-card.is-deal { min-height: 120px; }
+  .grocery-storefront-frame .grocery-footer-grid { width: 90%; grid-template-columns: 1fr 1fr; gap: 18px 13px; }
+  .grocery-storefront-frame .grocery-footer-brand { grid-column: 1/-1; }
+  .grocery-storefront-frame .page-surface { padding: 19px 0 38px; }
+  .grocery-storefront-frame .store-page,.grocery-storefront-frame .site-container { width: 90%; }
+  .grocery-storefront-frame .listing-layout,.grocery-storefront-frame .cart-layout,.grocery-storefront-frame .checkout-layout,.grocery-storefront-frame .account-layout,.grocery-storefront-frame .contact-layout,.grocery-storefront-frame .seller-application { grid-template-columns: 1fr; }
+  .grocery-storefront-frame .order-summary,.grocery-storefront-frame .checkout-summary { position: static; }
+  .grocery-storefront-frame .product-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .grocery-storefront-frame .journal-grid,.grocery-storefront-frame .store-directory { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 380px) {
+  .grocery-storefront-frame .grocery-brand { font-size: 13px; }
+  .grocery-storefront-frame .grocery-header-actions { gap: 6px; }
+  .grocery-storefront-frame .grocery-hero { min-height: 182px; }
+  .grocery-storefront-frame .grocery-hero-copy h1 { font-size: 17px; }
+  .grocery-storefront-frame .grocery-home-content { width: 92%; }
+  .grocery-storefront-frame .grocery-category-card b { font-size: 9px; }
+}
+
+.grocery-storefront-frame .grocery-about-copy { max-width: 700px; padding: 22px 24px; border: 1px solid #e5ece8; border-radius: 7px; background: #f7faf8; }
+.grocery-storefront-frame .grocery-about-copy h2 { margin: 0 0 10px; color: #1e2623; font-size: 20px; }
+.grocery-storefront-frame .grocery-about-copy p { color: #67726e; font-size: 13px; line-height: 1.8; }
+.grocery-storefront-frame .grocery-about-copy .button-primary { margin-top: 9px; }
+
+/* Fine alignment for the provided 736px reference canvas. */
+.grocery-storefront-frame .grocery-nav-wrap { width: 80%; }
+.grocery-storefront-frame .grocery-home-content { width: 80%; gap: 25px; }
+.grocery-storefront-frame .grocery-category-card { min-height: 130px; }
+.grocery-storefront-frame .grocery-popular-grid .grocery-product-art { height: 96px; }
+.grocery-storefront-frame .grocery-best-sellers-promo,.grocery-storefront-frame .grocery-best-sellers-grid .grocery-product-card { min-height: 180px; }
+.grocery-storefront-frame .grocery-product-card.is-deal { min-height: 115px; }
+.grocery-storefront-frame .grocery-product-card.is-deal .grocery-product-art { height: 60px; }
+@media (max-width: 850px) {
+  .grocery-storefront-frame .grocery-nav-wrap { width: 80%; }
+  .grocery-storefront-frame .grocery-home-content,.grocery-storefront-frame .store-page,.grocery-storefront-frame .site-container,.grocery-storefront-frame .grocery-footer-grid { width: 80%; }
+}
+@media (max-width: 650px) {
+  .grocery-storefront-frame .grocery-nav-wrap { width: calc(100% - 24px); }
+  .grocery-storefront-frame .grocery-home-content,.grocery-storefront-frame .grocery-footer-grid,.grocery-storefront-frame .store-page,.grocery-storefront-frame .site-container { width: 90%; }
+  .grocery-storefront-frame .grocery-home-content { gap: 18px; }
+  .grocery-storefront-frame .grocery-category-card { min-height: 90px; }
+  .grocery-storefront-frame .grocery-popular-grid .grocery-product-art { height: 90px; }
+  .grocery-storefront-frame .grocery-best-sellers-promo { min-height: 130px; }
+  .grocery-storefront-frame .grocery-best-sellers-grid .grocery-product-card { min-height: 145px; }
+  .grocery-storefront-frame .grocery-product-card.is-deal { min-height: 120px; }
+  .grocery-storefront-frame .grocery-product-card.is-deal .grocery-product-art { height: 60px; }
+}
+
+.grocery-storefront-frame .grocery-footer-grid { padding: 14px 0 8px; }
+.grocery-storefront-frame .grocery-category-card:first-child > span { font-size: 38px; }
+@media (max-width: 650px) {
+  .grocery-storefront-frame .grocery-category-card:first-child > span { font-size: 28px; }
+}
+
+/* Map the existing shared public-page tokens onto the reference palette. */
+.grocery-storefront-frame {
+  --jm-wine: #159b8c;
+  --jm-wine-dark: #107a6d;
+  --jm-cream: #dff3ea;
+  --jm-cream-light: #f1faf6;
+  --jm-paper: #ffffff;
+  --jm-canvas: #ffffff;
+  --jm-line: #e5e8e7;
+  --jm-ink: #171d1c;
+  --jm-muted: #6a7371;
 }

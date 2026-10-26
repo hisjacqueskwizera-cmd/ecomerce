@@ -1,88 +1,61 @@
 ﻿"use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { categories, money } from "../lib/catalog";
 import { useStore } from "./StoreProvider";
-import DistrictOptions from "./DistrictOptions";
 import { useStorefrontConfig } from "./useStorefrontConfig";
 
 function Icon({ name }) {
   const paths = {
-    search: <><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></>,
     user: <><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.8-3.5 3.1-5.3 7-5.3s6.2 1.8 7 5.3"/></>,
     heart: <path d="M20.2 8.7c0 4.4-8.2 10-8.2 10s-8.2-5.6-8.2-10a4.3 4.3 0 0 1 8.2-1.8 4.3 4.3 0 0 1 8.2 1.8Z"/>,
     bag: <><path d="M5 8h14l1 12H4L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></>,
   };
-  return <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">{paths[name]}</svg>;
+  return <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">{paths[name]}</svg>;
 }
 
 export function StoreHeader() {
   const { cartCount, subtotal, wishlist } = useStore();
   const config = useStorefrontConfig();
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("");
-  const [district, setDistrict] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
-  const router = useRouter();
 
-  useEffect(() => setDistrict(localStorage.getItem("openshop-delivery-district") || ""), []);
-
-  function selectDistrict(event) {
-    const selected = event.target.value;
-    setDistrict(selected);
-    if (selected) localStorage.setItem("openshop-delivery-district", selected);
-    else localStorage.removeItem("openshop-delivery-district");
-  }
-
-  function search(event) {
-    event.preventDefault();
-    const params = new URLSearchParams();
-    if (query.trim()) params.set("q", query.trim());
-    if (category) params.set("category", category);
-    router.push(`/search${params.size ? `?${params.toString()}` : ""}`);
-    setMenuOpen(false);
-  }
-
-  return <header id="top" className="site-header marketplace-header">
-    <div className="site-topline"><div className="site-container site-topline-inner">
-      <div className="market-top-welcome"><span>Welcome to JashaMart</span><Link href="/login">Sign in</Link><span>or</span><Link href="/signup">register</Link></div>
-      <div className="market-top-links"><Link href="/shop?sort=popular">Today's deals</Link><Link href="/contact">Help &amp; contact</Link><Link href="/sell">Sell on JashaMart</Link><label className="delivery-control"><span className="delivery-copy"><small>Deliver to</small><b>{district || "Rwanda"}</b></span><select value={district} onChange={selectDistrict} aria-label="Select delivery district"><option value="">All Rwanda</option><DistrictOptions/></select></label></div>
-    </div></div>
-    <div className="site-header-main"><div className="site-container site-header-inner">
-      <Link className="brand-lockup" href="/" aria-label="JashaMart home"><img className="brand-logo" src="/images/jashamart-logo.png" alt="JashaMart"/></Link>
-      <form className="store-search" onSubmit={search} role="search">
-        <select aria-label="Search category" value={category} onChange={event => setCategory(event.target.value)}><option value="">All departments</option>{categories.map(item => <option key={item}>{item}</option>)}</select>
-        <input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search for anything" aria-label="Search products"/>
-        <button aria-label="Search"><Icon name="search"/><span>Search</span></button>
-      </form>
-      <Link className="advanced-search" href="/search">Advanced</Link>
-      <div className="header-actions">
-        <Link className="header-action" href="/account" aria-label="Your account"><Icon name="user"/><span>Account</span></Link>
-        <Link className="header-action" href="/wishlist" aria-label={`Saved items, ${wishlist.length}`}><Icon name="heart"/><span>Saved</span>{wishlist.length > 0 && <i>{wishlist.length}</i>}</Link>
-        <Link className="header-cart" href="/cart" aria-label={`Cart, ${cartCount} items`}><span className="cart-icon-wrap"><Icon name="bag"/>{cartCount > 0 && <i>{cartCount}</i>}</span><span><b>Cart</b><small>{money(subtotal)}</small></span></Link>
-        <button className="mobile-menu-toggle" onClick={() => setMenuOpen(open => !open)} aria-expanded={menuOpen} aria-label={menuOpen ? "Close menu" : "Open menu"}>{menuOpen ? "×" : "☰"}</button>
+  return <header id="top" className="site-header grocery-header">
+    <div className="grocery-ribbon"><span>Online Grocery Store Homepage design</span></div>
+    <div className="grocery-nav-wrap">
+      <Link className="grocery-brand" href="/" aria-label="JashaMart home"><span className="grocery-tomato" aria-hidden="true">🍅</span><span>JashaMart</span></Link>
+      {config.chrome.showNavigation && <div className="grocery-category-wrap">
+        <button className="grocery-category-button" onClick={() => setCategoriesOpen(open => !open)} aria-expanded={categoriesOpen}><span aria-hidden="true">☷</span> Categories</button>
+        {categoriesOpen && <div className="grocery-category-menu"><strong>Shop by category</strong>{categories.map(item => <Link key={item} href={`/shop?category=${encodeURIComponent(item)}`} onClick={() => setCategoriesOpen(false)}>{item}</Link>)}</div>}
+      </div>}
+      {config.chrome.showNavigation && <nav className={`grocery-nav-links ${menuOpen ? "is-open" : ""}`} aria-label="Main navigation">
+        <Link href="/shop?sort=popular" onClick={() => setMenuOpen(false)}>Deals</Link>
+        <Link href="/shop?sort=newest" onClick={() => setMenuOpen(false)}>New Arrivals</Link>
+        <Link href="/about" onClick={() => setMenuOpen(false)}>About Us</Link>
+        <Link href="/contact" onClick={() => setMenuOpen(false)}>Contact</Link>
+      </nav>}
+      <div className="grocery-header-actions">
+        <Link href="/account" aria-label="Account"><Icon name="user"/></Link>
+        <Link href="/wishlist" aria-label={`Wishlist, ${wishlist.length} items`}><Icon name="heart"/>{wishlist.length > 0 && <i>{wishlist.length}</i>}</Link>
+        <Link href="/cart" className="grocery-cart-action" aria-label={`Cart, ${cartCount} items`}><Icon name="bag"/>{cartCount > 0 && <i>{cartCount}</i>}<small>{cartCount > 0 ? money(subtotal) : ""}</small></Link>
+        <button className="grocery-mobile-toggle" onClick={() => setMenuOpen(open => !open)} aria-expanded={menuOpen} aria-label={menuOpen ? "Close menu" : "Open menu"}>{menuOpen ? "×" : "☰"}</button>
       </div>
-    </div></div>
-    {config.chrome.showNavigation && <nav className={`site-nav ${menuOpen ? "is-open" : ""}`}><div className="site-container site-nav-inner">
-      <div className="category-menu-wrap"><button className="category-menu-trigger" aria-expanded={categoriesOpen} onClick={() => setCategoriesOpen(open => !open)}><span>Shop by category</span><b aria-hidden="true">⌄</b></button>{categoriesOpen && <div className="category-menu"><strong>Shop by department</strong>{categories.map(item => <Link key={item} href={`/shop?category=${encodeURIComponent(item)}`} onClick={() => setCategoriesOpen(false)}>{item}<span>→</span></Link>)}<Link className="category-menu-all" href="/shop" onClick={() => setCategoriesOpen(false)}>View all products</Link></div>}</div>
-      <div className="site-nav-links">{config.chrome.nav.filter(item => item.active && item.label && item.href).map((item, index) => <Link key={`${item.href}-${index}`} href={item.href} onClick={() => setMenuOpen(false)}>{item.label}</Link>)}</div>
-      <span className="nav-note">Shop local · Rwanda-wide</span>
-    </div></nav>}
+    </div>
   </header>;
 }
 
 export function StoreFooter() {
   const config = useStorefrontConfig();
-  return <footer className="site-footer" id="footer"><div className="site-container footer-main">
-    <div className="footer-brand"><Link className="brand-lockup footer-brand-lockup" href="/" aria-label="JashaMart home"><img className="brand-logo" src="/images/jashamart-logo.png" alt=""/></Link><p>{config.chrome.footerDescription}</p></div>
-    <div className="footer-column"><b>Information</b><Link href="/shipping">Delivery &amp; returns</Link><Link href="/faq">Frequently asked questions</Link><Link href="/journal">Stories &amp; updates</Link></div>
-    <div className="footer-column"><b>My account</b><Link href="/account">Your account</Link><Link href="/login">Sign in</Link><Link href="/wishlist">Saved products</Link><Link href="/cart">Your cart</Link></div>
-    <div className="footer-column"><b>Explore</b><Link href="/shop">Shop all products</Link><Link href="/stores">Browse stores</Link><Link href="/sell">Sell on JashaMart</Link><Link href="/journal">The JashaMart journal</Link></div>
-    <div className="footer-column footer-contact"><b>Contact info</b><p>Need help with an order, your account, or a seller listing?</p><Link href="/contact">Help &amp; contact →</Link><Link href="/faq">Visit the help center</Link></div>
-  </div><div className="site-container footer-bottom"><span>© {new Date().getFullYear()} JashaMart Rwanda</span><span>Made for the way we shop here.</span><a href="#top">Back to top ↑</a></div></footer>;
+  return <footer className="site-footer grocery-footer" id="footer">
+    <div className="grocery-footer-grid">
+      <div className="grocery-footer-brand"><Link className="grocery-brand footer-brand-lockup" href="/" aria-label="JashaMart home"><span className="grocery-tomato" aria-hidden="true">🍅</span><span>JashaMart</span></Link><p>{config.chrome.footerDescription}</p><small>Rwanda · Local stores, fresh finds</small></div>
+      <div className="grocery-footer-column"><b>Quick Links</b><Link href="/contact">Customer Service</Link><Link href="/account">My Account</Link><Link href="/shop">Resources</Link><Link href="/shipping">Delivery &amp; returns</Link></div>
+      <div className="grocery-footer-column"><b>Contact Us</b><Link href="/about">About</Link><Link href="/contact">Contact Us</Link><Link href="/faq">Help &amp; FAQs</Link><Link href="/shipping">Privacy &amp; policies</Link></div>
+      <div className="grocery-footer-column grocery-social-payment"><b>Follow Us</b><div className="grocery-social-icons" aria-label="Social channels"><span>f</span><span>♥</span><span>◎</span><span>▶</span></div><b>Payment method</b><div className="grocery-payment-icons"><span>MoMo</span><span>VISA</span><span>MC</span></div></div>
+    </div>
+    <div className="grocery-copyright">© {new Date().getFullYear()} JashaMart. All rights reserved.</div>
+  </footer>;
 }
 
 export function PageTitle({ eyebrow, title, description, children }) {
