@@ -8,7 +8,7 @@ import { useCatalogProducts } from "./useCatalogProducts";
 export default function SellerProductCollection({ seller }) {
   const items = useCatalogProducts().filter(product => sellerSlug(product.seller) === seller.slug);
   return <>
-    <PageTitle title={`Products from ${seller.name}`} description={`${items.length} products from this Open Shop seller.`}/>
+    <PageTitle title={`Products from ${seller.name}`} description={`${items.length} products from this JashaMart seller.`}/>
     <ProductGrid items={items}/>
   </>;
 }

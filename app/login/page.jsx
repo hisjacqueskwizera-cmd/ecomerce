@@ -9,11 +9,11 @@ export default async function LoginPage({ searchParams }) {
     ? "That confirmation link is invalid or expired. Request a new sign-up email, then follow its link."
     : "";
   return <main className="auth-page"><section className="auth-card">
-    <Link className="wordmark" href="/">Open Shop</Link>
+    <Link className="wordmark auth-wordmark" href="/" aria-label="JashaMart home"><img src="/images/jashamart-logo.png" alt="JashaMart"/></Link>
     <span className="eyebrow">WELCOME BACK</span>
-    <h1>Sign in to Open Shop</h1>
+    <h1>Sign in to JashaMart</h1>
     <p>Access your account and orders.</p>
     <AuthForm mode="login" next={params?.next} initialMessage={authMessage}/>
-    <p className="auth-switch">New to Open Shop? <Link href="/signup">Create an account</Link></p>
+    <p className="auth-switch">New to JashaMart? <Link href="/signup">Create an account</Link></p>
   </section></main>;
 }

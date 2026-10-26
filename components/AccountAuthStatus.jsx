@@ -22,7 +22,7 @@ export default function AccountAuthStatus() {
     return () => { current = false; };
   }, []);
 
-  if (!account) return <p className="account-auth-note"><Link href="/login">Sign in</Link> or <Link href="/signup">create an account</Link> to register with Open Shop.</p>;
+  if (!account) return <p className="account-auth-note"><Link href="/login">Sign in</Link> or <Link href="/signup">create an account</Link> to register with JashaMart.</p>;
 
   return <p className="account-auth-note">Signed in as <b>{account.email}</b>{account.role && <> · Role: <b>{account.role.replaceAll("_", " ")}</b></>} <button type="button" onClick={async () => { await createSupabaseBrowserClient().auth.signOut(); setAccount(null); }}>Sign out</button></p>;
 }

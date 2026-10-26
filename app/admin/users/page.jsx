@@ -41,7 +41,7 @@ export default function AdminUsersPage() {
   }
 
   return <>
-    <div className="admin-page-heading"><div><h1>User roles</h1><p>Manage Open Shop super admins, sellers, and clients.</p></div><button className="admin-secondary" onClick={loadUsers} disabled={loading}>Refresh list</button></div>
+    <div className="admin-page-heading"><div><h1>User roles</h1><p>Manage JashaMart super admins, sellers, and clients.</p></div><button className="admin-secondary" onClick={loadUsers} disabled={loading}>Refresh list</button></div>
     <section className="admin-card"><div className="admin-card-title"><div><h2>Accounts</h2><p>New accounts receive their initial role automatically. Promote an account here to add another super admin.</p></div></div>
       {error && <p className="coupon-error" role="alert">{error}</p>}
       <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>NAME</th><th>EMAIL</th><th>JOINED</th><th>ROLE</th></tr></thead><tbody>

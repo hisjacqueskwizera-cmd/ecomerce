@@ -30,7 +30,7 @@ export default function Home() {
   return <main className="market-home-blue">
     <div className="site-container">
       <section className="marketplace-welcome">
-        <div className="marketplace-welcome-copy"><span className="blue-eyebrow">OPEN SHOP · RWANDA</span><h1>{headlineLines.map((line, index) => <span key={index}>{index > 0 && <br/>}{index > 0 ? <em>{line}</em> : line}</span>)}</h1><p>{config.home.heroText}</p><div className="welcome-actions"><Link className="blue-button" href="/shop">Browse marketplace <span aria-hidden="true">→</span></Link><Link className="welcome-secondary" href="/sell">Sell on Open Shop</Link></div></div>
+        <div className="marketplace-welcome-copy"><span className="blue-eyebrow">JASHAMART · RWANDA</span><h1>{headlineLines.map((line, index) => <span key={index}>{index > 0 && <br/>}{index > 0 ? <em>{line}</em> : line}</span>)}</h1><p>{config.home.heroText}</p><div className="welcome-actions"><Link className="blue-button" href="/shop">Browse marketplace <span aria-hidden="true">→</span></Link><Link className="welcome-secondary" href="/sell">Sell on JashaMart</Link></div></div>
         <div className="marketplace-proof-panel"><div className="proof-panel-heading"><span className="blue-eyebrow">A BETTER WAY TO SHOP LOCAL</span><b>One marketplace.<br/>All across Rwanda.</b><small>Independent stores and useful things, in one easy place.</small></div><div className="proof-stat-grid"><div><strong>30</strong><span>districts<br/>reached</span></div><div><strong>RWF</strong><span>clear local<br/>pricing</span></div><div><strong>Local</strong><span>independent<br/>sellers</span></div></div><Link href="/shipping" className="proof-panel-link">Delivery information <span aria-hidden="true">↗</span></Link></div>
       </section>
 
@@ -48,7 +48,7 @@ export default function Home() {
 
       {sections.benefits.active && <section className="blue-benefits"><div><b>Shop with confidence</b><span>Clear prices and straightforward product details.</span></div><div><b>Find local sellers</b><span>Discover independent stores and makers.</span></div><div><b>Delivery across Rwanda</b><span>Choose a district at the top of the page.</span></div><div><b>Easy to get started</b><span>Browse, save favorites, or add to your cart.</span></div></section>}
 
-      {sections.newsletter.active && <section className="home-newsletter blue-newsletter"><div><span className="blue-eyebrow">THE OPEN SHOP EDIT</span><h2>{config.chrome.newsletterTitle}</h2><p>{config.chrome.newsletterText}</p></div><NewsletterSignup/></section>}
+      {sections.newsletter.active && <section className="home-newsletter blue-newsletter"><div><span className="blue-eyebrow">THE JASHAMART EDIT</span><h2>{config.chrome.newsletterTitle}</h2><p>{config.chrome.newsletterText}</p></div><NewsletterSignup/></section>}
     </div>
   </main>;
 }

@@ -49,7 +49,7 @@ export default function StoresDirectory() {
     <section className="seller-signup-callout">
       <div>
         <span className="eyebrow">HAVE A STORE OF YOUR OWN?</span>
-        <h2>Bring your shop to Open Shop.</h2>
+        <h2>Bring your shop to JashaMart.</h2>
         <p>Tell us about your business and we’ll be in touch.</p>
       </div>
       <Link className="button-primary" href="/sell">Become a seller →</Link>

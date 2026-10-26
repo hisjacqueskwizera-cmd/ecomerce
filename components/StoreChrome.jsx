@@ -49,7 +49,7 @@ export function StoreHeader() {
   return <header id="top" className="site-header">
     <div className="site-topline"><div className="site-container site-topline-inner"><span><i/> A local marketplace, made for Rwanda</span><Link href="/shipping">Delivery to all 30 districts <b aria-hidden="true">↗</b></Link></div></div>
     <div className="site-header-main"><div className="site-container site-header-inner">
-      <Link className="brand-lockup" href="/" aria-label="Open Shop home"><span className="brand-mark">o</span><span className="brand-name">open shop<small>{config.chrome.tagline}</small></span></Link>
+      <Link className="brand-lockup" href="/" aria-label="JashaMart home"><img className="brand-logo" src="/images/jashamart-logo.png" alt=""/></Link>
       <form className="store-search" onSubmit={search} role="search">
         <select aria-label="Search category" value={category} onChange={event => setCategory(event.target.value)}><option value="">All departments</option>{categories.map(item => <option key={item}>{item}</option>)}</select>
         <input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search products, stores and more" aria-label="Search products"/>
@@ -74,11 +74,11 @@ export function StoreHeader() {
 export function StoreFooter() {
   const config = useStorefrontConfig();
   return <footer className="site-footer" id="footer"><div className="site-container footer-main">
-    <div className="footer-brand"><Link className="brand-lockup footer-brand-lockup" href="/"><span className="brand-mark">o</span><span className="brand-name">open shop<small>Rwanda's local marketplace</small></span></Link><p>{config.chrome.footerDescription}</p></div>
+    <div className="footer-brand"><Link className="brand-lockup footer-brand-lockup" href="/" aria-label="JashaMart home"><img className="brand-logo" src="/images/jashamart-logo.png" alt=""/></Link><p>{config.chrome.footerDescription}</p></div>
     <div className="footer-column"><b>Customer care</b><Link href="/contact">Contact us</Link><Link href="/shipping">Delivery &amp; returns</Link><Link href="/faq">Help &amp; FAQs</Link></div>
-    <div className="footer-column"><b>Explore</b><Link href="/shop">Shop all products</Link><Link href="/stores">Local stores</Link><Link href="/journal">Stories &amp; updates</Link><Link href="/sell">Sell on Open Shop</Link></div>
+    <div className="footer-column"><b>Explore</b><Link href="/shop">Shop all products</Link><Link href="/stores">Local stores</Link><Link href="/journal">Stories &amp; updates</Link><Link href="/sell">Sell on JashaMart</Link></div>
     <div className="footer-newsletter"><b>Good things, occasionally.</b><p>{config.chrome.newsletterText}</p><Newsletter/></div>
-  </div><div className="site-container footer-bottom"><span>© {new Date().getFullYear()} Open Shop Rwanda</span><span>Made for the way we shop here.</span><a href="#top">Back to top ↑</a></div></footer>;
+  </div><div className="site-container footer-bottom"><span>© {new Date().getFullYear()} JashaMart Rwanda</span><span>Made for the way we shop here.</span><a href="#top">Back to top ↑</a></div></footer>;
 }
 
 function Newsletter() {
