@@ -63,7 +63,6 @@ export default function Home() {
   ].filter(tab => tab.active);
   const selectedTab = productTabs.find(tab => tab.key === activeTab) || productTabs[0];
   const heroSlides = [
-    { eyebrow: "RWANDA'S LOCAL MARKETPLACE", title: config.home.heroTitle.split("\n"), text: config.home.heroText, image: "/images/catalog/rubavu-shop-space.jpg", href: "/shop", cta: "Shop now" },
     { eyebrow: "HOME & FURNITURE", title: ["Make room for", "something good."], text: "Discover furniture, decor, and thoughtful finds from independent local stores.", image: "/images/catalog/wooden-dining-table.jpg", href: "/shop?category=Furniture", cta: "Explore home" },
     { eyebrow: "HOMES & LOCAL SPACES", title: ["Find a space", "that feels right."], text: "Browse homes, rentals, and commercial spaces listed by local sellers.", image: "/images/catalog/kicukiro-two-bedroom-apartment.jpg", href: "/shop?category=Real%20Estate", cta: "Explore properties" },
   ];
