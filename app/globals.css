@@ -1410,149 +1410,148 @@ body{background:var(--jm-canvas);color:var(--jm-ink)}
 }
 
 
-/* Reference-inspired storefront refinement: compact retail panels and clear green category accents */
-.market-home-shell { background: #f1f2f4; padding-top: 14px; }
-.store-home-layout { width: min(1280px, calc(100% - 48px)); grid-template-columns: clamp(190px, 19vw, 238px) minmax(0, 1fr); gap: 14px; }
-.store-home-main { gap: 12px; }
-.home-widget,.store-home-departments,.store-home-products,.store-home-special-products,.store-home-journal,.store-home-stores { border-color: #e3e6e8; border-radius: 3px; background: #fff; }
-.home-widget-title { background: #63a832; color: #fff; }
-.home-category-list a { min-height: 30px; border-color: #edf0f1; }
-.home-category-list a:hover,.home-widget-more,.home-spotlight-link { color: #548f2c; }
-.home-widget-cta { background: #63a832; }
-.home-widget-cta:hover { background: #4f8f26; }
-.home-deal-discount { background: #63a832; }
-.home-service-widget > a > i,.home-spotlight-mark,.home-store-logo > span { background: #edf5e8; color: #548f2c; }
-.home-side-promo { border-color: #e3e6e8; }
-.home-sidebar-newsletter .newsletter-band-form button { background: #63a832; }
-.store-hero-carousel { min-height: 230px; border-radius: 2px; background: #26292b; }
-.store-hero-image { left: 43%; width: 57%; object-position: center; clip-path: polygon(13% 0,100% 0,100% 100%,0 100%); }
-.store-hero-overlay { background: linear-gradient(90deg,#242729 0%,#242729 40%,#242729e8 49%,#24272900 78%); }
-.store-hero-content { width: 55%; padding-left: clamp(22px,4vw,48px); }
-.store-hero-content > span,.home-promo-copy small { color: #a8d77f; }
-.store-hero-content h1 { font-size: clamp(26px,3vw,38px); }
-.store-hero-cta { border-radius: 2px; background: #63a832; color: #fff; }
-.store-hero-controls > button { border-radius: 2px; background: #63a832; }
-.home-section-head h2 { color: #26292b; font-size: 17px; }
-.home-section-head > a,.home-product-tabs button.active,.home-journal-more { color: #548f2c; }
-.home-section-head > div > span { color: #718076; }
-.store-home-departments,.store-home-products,.store-home-special-products,.store-home-journal,.store-home-stores { padding: 13px 14px; }
-.home-category-circle-art { width: clamp(54px,5.8vw,72px); height: clamp(54px,5.8vw,72px); border-color: #e8ebed; border-radius: 8px; background: #f7f8f9; }
-.home-category-circle-art b { color: #5c9e32; }
-.home-category-circle:hover .home-category-circle-art { border-color: #83b95d; box-shadow: 0 0 0 2px #63a83218; }
-.home-product-tabs { border-color: #e8ebed; }
-.home-product-tabs button.active::after { background: #63a832; }
-.market-home-shell .product-card { border-color: #e8ebed; border-radius: 2px; }
-.market-home-shell .product-art { background: #f5f6f7; }
-.market-home-shell .product-card:hover { border-color: #a9cf8c; box-shadow: 0 3px 12px #202a1a12; }
-.market-home-shell .product-details .price-line b { color: #548f2c; }
-.market-home-shell .add-button { border-color: #d5e5c9; color: #548f2c; }
-.market-home-shell .add-button:hover { border-color: #63a832; background: #63a832; color: #fff; }
-.home-promo-card { border-radius: 2px; }
-.home-promo-shade { background: linear-gradient(90deg,#202729dc 0%,#2027299a 62%,#20272908 100%); }
-.home-journal-card { border-color: #e8ebed; border-radius: 2px; }
-.home-store-logo { border-color: #e8ebed; border-radius: 2px; }
-.home-store-logo:hover { border-color: #a9cf8c; }
-.site-footer { background: #242729; color: #e9ebec; border-top: 0; }
-.site-footer .footer-brand p,.site-footer .footer-column a,.site-footer .footer-bottom { color: #aeb5b7; }
-.site-footer .footer-column > b,.site-footer .footer-newsletter > b { color: #fff; }
-.site-footer .footer-column a:hover,.site-footer .footer-bottom a { color: #a8d77f; }
-.site-footer .footer-bottom { border-top-color: #414648; }
-
-@media (max-width: 1080px) {
-  .store-home-layout { grid-template-columns: 195px minmax(0, 1fr); }
+/* Unified JashaMart theme: wine, cream and warm neutrals across every storefront page */
+:root {
+  --jm-wine: #80001f;
+  --jm-wine-dark: #5b0016;
+  --jm-cream: #e8c998;
+  --jm-cream-light: #f5e7cd;
+  --jm-paper: #fffdf8;
+  --jm-canvas: #faf6ee;
+  --jm-ink: #302326;
+  --jm-muted: #76686a;
+  --jm-line: #e8dccc;
+  --brand-blue: var(--jm-wine);
+  --green: var(--jm-wine);
+  --positive-green: #66824f;
 }
-@media (max-width: 850px) {
-  .store-home-layout { width: calc(100% - 28px); }
-}
-@media (max-width: 620px) {
-  .store-home-layout { width: calc(100% - 20px); }
-  .store-hero-image { left: 34%; width: 66%; }
-  .store-hero-content { width: 72%; }
-  .store-home-departments,.store-home-products,.store-home-special-products,.store-home-journal,.store-home-stores { padding: 10px; }
-  .home-category-circle-art { border-radius: 7px; }
-  .site-footer { margin-top: 4px; }
-}
-
-/* Shared marketplace chrome echoes the reference's green masthead and charcoal navigation. */
-.site-topline { background: #63a832; color: #f7fff2; }
-.market-top-welcome,.market-top-links,.market-top-welcome a,.market-top-links > a { color: #f7fff2; }
-.market-top-welcome a:hover,.market-top-links > a:hover { color: #e4f5d8; }
-.market-top-links .delivery-copy small,.market-top-links .delivery-copy b { color: #fff; }
-.site-header-main { background: #fff; }
-.store-search { border-color: #63a832; }
-.store-search button { background: #63a832; }
-.store-search button:hover { background: #4f8f26; }
-.header-action:hover,.header-cart:hover { color: #548f2c; }
-.header-action i,.cart-icon-wrap i { background: #63a832; }
-.site-nav { border-top-color: #242729; background: #242729; }
-.category-menu-trigger { border-color: #63a832; background: #548f2c; }
-.category-menu-trigger:hover { border-color: #4f8f26; background: #4f8f26; }
-.site-nav-links a { color: #f2f3f4; }
-.site-nav-links a:hover { color: #a8d77f; }
-.nav-note { color: #d1e8c0; }
-
-/* Readability and responsive polish for the refreshed marketplace home. */
-.store-home-layout { gap: 16px; }
+body { background: var(--jm-canvas); color: var(--jm-ink); }
+.site-header { background: var(--jm-paper); border-bottom-color: var(--jm-line); }
+.site-topline { background: #f1e5d1; color: #655457; }
+.market-top-welcome,.market-top-links { color: #655457; }
+.market-top-welcome a,.market-top-links > a { color: var(--jm-wine); }
+.market-top-welcome a:hover,.market-top-links > a:hover { color: var(--jm-wine-dark); }
+.market-top-links .delivery-copy small { color: #8b7772; }
+.market-top-links .delivery-copy b { color: #513d40; }
+.site-header-main { background: var(--jm-paper); }
+.store-search { border-color: var(--jm-wine); background: #fff; }
+.store-search select { border-right-color: var(--jm-line); background: #fffaf1; }
+.store-search button,.home-widget-cta,.home-sidebar-newsletter .newsletter-band-form button { background: var(--jm-wine); }
+.store-search button:hover,.home-widget-cta:hover,.home-sidebar-newsletter .newsletter-band-form button:hover { background: var(--jm-wine-dark); }
+.header-action:hover,.header-cart:hover,.advanced-search:hover,.mobile-menu-toggle { color: var(--jm-wine); }
+.header-action i,.cart-icon-wrap i { background: var(--jm-wine); color: #fffaf1; }
+.site-nav { border-top-color: #6b1025; background: var(--jm-wine); }
+.category-menu-trigger { border-color: #b86c7a; background: #6b0019; color: #fff8ee; }
+.category-menu-trigger:hover { border-color: var(--jm-wine-dark); background: var(--jm-wine-dark); }
+.site-nav-links a { color: #f8ebd9; }
+.site-nav-links a:hover { color: var(--jm-cream); }
+.nav-note { color: #f0d6ac; }
+.category-menu { border-color: var(--jm-line); background: var(--jm-paper); }
+.category-menu > a:hover { background: #f7ecd9; }
+.category-menu > a.category-menu-all,.category-menu > a span { color: var(--jm-wine); }
+.page-surface,.market-home-blue,.market-home-shell { background: var(--jm-canvas); }
+.page-title > span,.eyebrow,.blue-eyebrow { color: #84515b; }
+.page-title h1,.home-section-head h2 { color: var(--jm-ink); }
+.page-title p,.breadcrumbs { color: var(--jm-muted); }
+.breadcrumbs a:hover,.text-link,.page-title a,.home-section-head > a,.home-widget-more,.home-spotlight-link,.home-journal-more { color: var(--jm-wine); }
+.button-primary,.button-dark,.home-widget-title,.home-widget-cta,.home-sidebar-newsletter .newsletter-band-form button,.store-hero-cta,.store-hero-controls > button { border-color: var(--jm-wine); background: var(--jm-wine); color: #fff8ed; }
+.button-primary:hover,.home-widget-cta:hover,.home-sidebar-newsletter .newsletter-band-form button:hover,.store-hero-cta:hover,.store-hero-controls > button:hover { border-color: var(--jm-wine-dark); background: var(--jm-wine-dark); color: #fff8ed; }
+.button-dark { border-color: var(--jm-wine-dark); background: var(--jm-wine-dark); }
+.button-dark:hover { background: #3d0010; }
+.empty-state,.store-ad-banner,.home-widget,.store-home-departments,.store-home-products,.store-home-special-products,.store-home-journal,.store-home-stores { border-color: var(--jm-line); background: var(--jm-paper); }
+.market-home-shell { padding-top: 14px; }
+.store-home-layout { width: min(1280px,calc(100% - 48px)); grid-template-columns: clamp(190px,19vw,238px) minmax(0,1fr); gap: 16px; }
 .store-home-main { gap: 16px; }
 .store-home-sidebar { gap: 12px; }
 .home-widget-title { padding: 11px 13px; font-size: 11px; }
 .home-category-list { padding: 4px 12px 0; }
-.home-category-list a { min-height: 34px; font-size: 10px; }
-.home-category-list small { font-size: 8px; }
+.home-category-list a { min-height: 34px; border-color: #f0e8dd; color: #57474a; font-size: 10px; }
+.home-category-list a:hover { color: var(--jm-wine); }
+.home-category-list small { color: #9a8780; font-size: 8px; }
 .home-widget-more { padding: 9px 12px 11px; font-size: 9px; }
-.home-service-widget > a { grid-template-columns: 32px 1fr; padding: 9px 11px; }
-.home-service-widget > a > i { width: 30px; height: 30px; }
-.home-service-widget b { font-size: 9px; }
-.home-service-widget small { font-size: 8px; }
+.home-deal-photo,.home-deal-photo .product-art { background: #f8f1e5; }
+.home-deal-discount { background: var(--jm-wine); }
+.home-service-widget > a { border-color: #f0e8dd; }
+.home-service-widget > a > i,.home-spotlight-mark,.home-store-logo > span { background: var(--jm-cream-light); color: var(--jm-wine); }
+.home-side-promo { border-color: var(--jm-line); }
+.home-sidebar-newsletter .newsletter-band-form input { border-color: #e1d2bd; }
+.store-hero-carousel { min-height: 230px; border-radius: 3px; background: var(--jm-wine-dark); }
+.store-hero-image { left: 43%; width: 57%; object-position: center; clip-path: polygon(13% 0,100% 0,100% 100%,0 100%); }
+.store-hero-overlay { background: linear-gradient(90deg,#5b0016 0%,#5b0016 40%,#5b0016e8 49%,#5b001600 78%); }
+.store-hero-content { width: 55%; padding-left: clamp(22px,4vw,48px); }
+.store-hero-content > span,.home-promo-copy small { color: var(--jm-cream); }
+.store-hero-content h1 { color: #fffaf1; font-size: clamp(26px,3vw,38px); }
+.store-hero-content p { color: #f5e7d9; }
+.store-hero-cta { background: var(--jm-cream); color: var(--jm-wine-dark); }
+.store-hero-cta:hover { background: #f2d9ab; color: #4b0012; }
+.store-hero-controls > button { background: #6b0019; }
 .home-section-head h2 { font-size: 18px; }
-.home-section-head > div > span { font-size: 8px; }
+.home-section-head > div > span { color: #967777; font-size: 8px; }
 .home-section-head > a { font-size: 9px; }
-.home-category-circle { font-size: 9px; }
+.store-home-departments,.store-home-products,.store-home-special-products,.store-home-journal,.store-home-stores { padding: 13px 14px; border-radius: 4px; }
+.home-category-circles { gap: 9px; }
+.home-category-circle { min-height: 91px; align-content: center; gap: 6px; padding: 8px 5px; border: 1px solid var(--jm-line); border-radius: 3px; background: var(--jm-paper); color: #5c4b4e; font-size: 9px; }
+.home-category-circle-art { width: 100%; height: 48px; border: 0; border-radius: 3px; background: #f6ecda; }
+.home-category-circle-art img { object-fit: contain; }
+.home-category-circle-art b { color: var(--jm-wine); font-size: 25px; }
+.home-category-circle:hover { border-color: #bd8b71; background: #faf3e7; color: var(--jm-wine); }
+.home-category-circle:hover .home-category-circle-art { border-color: transparent; box-shadow: none; background: var(--jm-cream-light); }
+.home-product-tabs { border-color: var(--jm-line); }
 .home-product-tabs button { font-size: 9px; }
+.home-product-tabs button.active,.home-product-tabs button.active::after { color: var(--jm-wine); }
+.home-product-tabs button.active::after { background: var(--jm-wine); }
+.market-home-shell .product-card { border-color: var(--jm-line); border-radius: 3px; background: var(--jm-paper); }
+.market-home-shell .product-art { background: #f7efdf; }
+.market-home-shell .product-card:hover { border-color: #d0b28b; box-shadow: 0 3px 12px #502b3214; }
 .market-home-shell .product-details { gap: 5px; padding: 9px; }
-.market-home-shell .product-vendor { font-size: 8px; }
-.market-home-shell .product-name { min-height: 32px; font-size: 10px; line-height: 1.4; }
+.market-home-shell .product-vendor { color: #897674; font-size: 8px; }
+.market-home-shell .product-name { min-height: 32px; color: #493136; font-size: 10px; line-height: 1.4; }
 .market-home-shell .product-rating { font-size: 9px; }
+.market-home-shell .product-rating span { color: #a97c25; }
+.market-home-shell .price-line b,.market-home-shell .price-line { color: var(--jm-wine); }
 .market-home-shell .price-line b { font-size: 11px; }
-.market-home-shell .add-button { min-height: 30px; height: auto; font-size: 9px; }
-.home-promo-card { height: 126px; }
+.market-home-shell .add-button { min-height: 30px; height: auto; border-color: #ddc9a8; color: var(--jm-wine); font-size: 9px; }
+.market-home-shell .add-button:hover { border-color: var(--jm-wine); background: var(--jm-wine); color: #fff8ed; }
+.home-promo-card { height: 126px; border-radius: 3px; }
+.home-promo-shade { background: linear-gradient(90deg,#3c202bdc 0%,#57323d8a 62%,#57323d08 100%); }
 .home-promo-copy { padding: 12px; }
-.home-promo-copy small { font-size: 7px; }
 .home-promo-copy b { font-size: 12px; }
 .home-promo-copy i { font-size: 8px; }
+.home-journal-card { border-color: var(--jm-line); border-radius: 3px; background: var(--jm-paper); }
 .home-journal-image { height: 125px; }
 .home-journal-card > div { padding: 11px; }
 .home-journal-card small,.home-journal-more { font-size: 8px; }
 .home-journal-card h3 { font-size: 11px; }
 .home-journal-card p { font-size: 9px; }
-.home-store-logo { min-height: 46px; padding: 6px 8px; }
+.home-store-logo { min-height: 46px; border-color: var(--jm-line); background: var(--jm-paper); }
 .home-store-logo > b { font-size: 8px; }
-.market-home-shell :focus-visible,.site-header :focus-visible,.site-footer :focus-visible { outline: 3px solid #63a832; outline-offset: 2px; }
+.home-store-logo:hover { border-color: #bd9d7c; }
+.site-footer { background: #f1e1c5; color: #493136; border-top: 1px solid #ddc7a6; }
+.site-footer .footer-brand p,.site-footer .footer-column a,.site-footer .footer-bottom { color: #715e60; }
+.site-footer .footer-column > b,.site-footer .footer-newsletter > b { color: #4a2a32; }
+.site-footer .footer-column a:hover,.site-footer .footer-bottom a { color: var(--jm-wine); }
+.site-footer .footer-bottom { border-top-color: #ddc7a6; }
+.newsletter,.newsletter-band,.home-newsletter { border-color: var(--jm-line); background: var(--jm-paper); }
+.newsletter button,.newsletter-band-form button { border-color: var(--jm-wine); background: var(--jm-wine); }
+.contact-form input:focus,.contact-form select:focus,.contact-form textarea:focus,.auth-form input:focus,.account-form input:focus,.account-form select:focus,.store-search:focus-within { border-color: #b78070; box-shadow: 0 0 0 2px #80001f20; }
+.market-home-shell :focus-visible,.site-header :focus-visible,.site-footer :focus-visible,.store-page :focus-visible { outline: 3px solid var(--jm-cream); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) {
   .market-home-shell *, .site-header *, .site-footer * { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }
-@media (max-width: 850px) {
-  .store-home-main { gap: 12px; }
-  .market-home-shell .product-name { font-size: 10px; }
-}
+@media (max-width: 1080px) { .store-home-layout { grid-template-columns: 195px minmax(0,1fr); } }
+@media (max-width: 850px) { .store-home-layout { width: calc(100% - 28px); } .store-home-main { gap: 12px; } }
 @media (max-width: 620px) {
+  .store-home-layout { width: calc(100% - 20px); }
+  .store-hero-image { left: 34%; width: 66%; }
+  .store-hero-content { width: 72%; }
+  .store-home-departments,.store-home-products,.store-home-special-products,.store-home-journal,.store-home-stores { padding: 10px; }
   .home-section-head h2 { font-size: 16px; }
   .home-promo-card { height: 112px; }
   .home-journal-image { height: 110px; }
+  .home-category-circle { min-height: 82px; }
+  .home-category-circle-art { height: 44px; }
   .market-home-shell .product-details { padding: 8px; }
   .market-home-shell .product-name { font-size: 10px; }
   .home-widget-title { font-size: 10px; }
-}
-
-/* Category shortcuts use compact clickable tiles, echoing the finished design concept. */
-.home-category-circles { gap: 9px; }
-.home-category-circle { min-height: 91px; align-content: center; gap: 6px; padding: 8px 5px; border: 1px solid #e8ebed; border-radius: 3px; background: #fff; }
-.home-category-circle-art { width: 100%; height: 48px; border: 0; border-radius: 3px; background: #f7f8f9; }
-.home-category-circle-art img { object-fit: contain; }
-.home-category-circle-art b { font-size: 25px; }
-.home-category-circle:hover { border-color: #a9cf8c; background: #f7fbf3; }
-.home-category-circle:hover .home-category-circle-art { border-color: transparent; box-shadow: none; background: #edf5e8; }
-@media (max-width: 620px) {
-  .home-category-circle { min-height: 82px; }
-  .home-category-circle-art { height: 44px; }
+  .site-footer { margin-top: 4px; }
 }
