@@ -56,13 +56,22 @@ async function exactCount(supabase, table, filters = []) {
   return query;
 }
 
-function CountCard({ title, count, detail, href, error }) {
+function ratio(value, total) {
+  const base = Number(total || 0);
+  return base > 0 ? Math.max(0, Math.min(100, Math.round((Number(value || 0) / base) * 100))) : 0;
+}
+
+function CountCard({ title, count, detail, href, error, icon }) {
   return <article className="admin-card admin-kpi">
-    <div className="admin-kpi-top"><span>{title}</span><span className="admin-kpi-icon">{error ? "!" : "#"}</span></div>
+    <div className="admin-kpi-top"><span>{title}</span><span className="admin-kpi-icon">{error ? "!" : icon}</span></div>
     <strong>{error ? "Unavailable" : Number(count || 0).toLocaleString("en-RW")}</strong>
     <small>{error ? "Could not read this table" : detail}</small>
     {href && <Link className="admin-kpi-link" href={href}>Manage</Link>}
   </article>;
+}
+
+function RecordMark({ children, className = "" }) {
+  return <span className={`admin-dashboard-record-mark ${className}`}>{children}</span>;
 }
 
 export default async function AdminDashboard({ searchParams }) {
@@ -80,22 +89,36 @@ export default async function AdminDashboard({ searchParams }) {
     exactCount(supabase, "seller_stores", [["eq", "status", "pending"]]),
     exactCount(supabase, "catalog_products", [["gte", "created_at", `${period.from}T00:00:00.000Z`], ["lt", "created_at", `${period.nextDay}T00:00:00.000Z`]]),
     exactCount(supabase, "seller_stores", [["gte", "created_at", `${period.from}T00:00:00.000Z`], ["lt", "created_at", `${period.nextDay}T00:00:00.000Z`]]),
-    supabase.from("catalog_products").select("id,name,slug,seller,category,stock,active,created_at").order("created_at", { ascending: false }).limit(6),
-    supabase.from("seller_stores").select("id,name,slug,status,location,created_at").order("created_at", { ascending: false }).limit(6),
+    supabase.from("catalog_products").select("id,name,slug,seller,category,stock,active,created_at").order("created_at", { ascending: false }).limit(5),
+    supabase.from("seller_stores").select("id,name,slug,status,location,created_at").order("created_at", { ascending: false }).limit(5),
   ]);
 
   const results = [products, activeProducts, lowStock, outOfStock, stores, activeStores, pendingStores, newProducts, newStores, recentProducts, recentStores];
   const errors = results.filter(result => result.error).map(result => result.error);
   const rangeLabel = ranges.find(([key]) => key === period.selected)?.[1] || "Last 30 days";
+  const totalProducts = Number(products.count || 0);
+  const stockRows = [
+    { label: "Healthy stock", count: Math.max(totalProducts - Number(lowStock.count || 0) - Number(outOfStock.count || 0), 0), tone: "healthy", available: !products.error && !lowStock.error && !outOfStock.error },
+    { label: "Low stock", count: Number(lowStock.count || 0), tone: "warning", available: !products.error && !lowStock.error },
+    { label: "Out of stock", count: Number(outOfStock.count || 0), tone: "empty", available: !products.error && !outOfStock.error },
+  ];
 
   return <>
-    <div className="admin-page-heading">
-      <div><h1>Marketplace overview</h1><p>Live inventory and vendor status from the marketplace database.</p></div>
-      <Link className="admin-primary" href="/">View storefront</Link>
-    </div>
+    {errors.length > 0 && <div className="admin-data-error" role="alert">
+      <strong>Some marketplace data could not be loaded.</strong>
+      <span>Check that the Supabase marketplace setup has been applied and that its admin policies are active.</span>
+    </div>}
 
-    <form className="admin-toolbar admin-period-toolbar" action="/admin">
-      <label htmlFor="admin-period">New records</label>
+    <section className="admin-kpis admin-dashboard-kpis" aria-label="Marketplace snapshot">
+      <CountCard title="Products" count={products.count} detail="All catalog listings" href="/admin/products" error={products.error} icon="▤" />
+      <CountCard title="Published listings" count={activeProducts.count} detail="Visible in the storefront" href="/admin/products" error={activeProducts.error} icon="✓" />
+      <CountCard title="Low stock" count={lowStock.count} detail="Between 1 and 5 units" href="/admin/products" error={lowStock.error} icon="!" />
+      <CountCard title="Seller stores" count={stores.count} detail="Registered storefronts" href="/admin/sellers" error={stores.error} icon="⌂" />
+      <CountCard title="Needs review" count={pendingStores.count} detail="Pending seller applications" href="/admin/sellers" error={pendingStores.error} icon="◷" />
+    </section>
+
+    <form className="admin-toolbar admin-period-toolbar admin-dashboard-period-toolbar" action="/admin">
+      <label htmlFor="admin-period">Activity period</label>
       <select id="admin-period" name="range" defaultValue={period.selected}>
         {ranges.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
       </select>
@@ -107,39 +130,44 @@ export default async function AdminDashboard({ searchParams }) {
       <span className="admin-count">{period.from} to {period.to}</span>
     </form>
 
-    {errors.length > 0 && <div className="admin-data-error" role="alert">
-      <strong>Some marketplace data could not be loaded.</strong>
-      <span>Check that the Supabase marketplace setup has been applied and that its admin policies are active.</span>
-    </div>}
-
-    <section className="admin-kpis" aria-label="Marketplace inventory">
-      <CountCard title="Products" count={products.count} detail="All catalog listings" href="/admin/products" error={products.error} />
-      <CountCard title="Published products" count={activeProducts.count} detail="Visible in the storefront" href="/admin/products" error={activeProducts.error} />
-      <CountCard title="Low stock" count={lowStock.count} detail="Between 1 and 5 units" href="/admin/products" error={lowStock.error} />
-      <CountCard title="Out of stock" count={outOfStock.count} detail="Listings with zero units" href="/admin/products" error={outOfStock.error} />
-    </section>
-
-    <section className="admin-kpis admin-vendor-kpis" aria-label="Vendor stores">
-      <CountCard title="Vendor stores" count={stores.count} detail="All registered storefronts" href="/admin/sellers" error={stores.error} />
-      <CountCard title="Active stores" count={activeStores.count} detail="Currently active" href="/admin/sellers" error={activeStores.error} />
-      <CountCard title="Applications to review" count={pendingStores.count} detail="Stores with pending status" href="/admin/sellers" error={pendingStores.error} />
-      <article className="admin-card admin-kpi"><div className="admin-kpi-top"><span>New in {rangeLabel.toLowerCase()}</span><span className="admin-kpi-icon">+</span></div><strong>{newProducts.error || newStores.error ? "Unavailable" : `${Number(newProducts.count || 0)} / ${Number(newStores.count || 0)}`}</strong><small>Products / stores created in this period</small></article>
-    </section>
-
-    <section className="admin-dashboard-grid">
-      <article className="admin-card">
-        <div className="admin-card-title"><div><h2>Recent products</h2><p>Latest records in the shared catalog</p></div><Link href="/admin/products">Manage products</Link></div>
-        {recentProducts.error ? <div className="admin-empty">Product records are unavailable. Check the Supabase table and access policies.</div> : recentProducts.data?.length ? <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>PRODUCT</th><th>STORE</th><th>CATEGORY</th><th>STOCK</th><th>STATUS</th></tr></thead><tbody>{recentProducts.data.map(product => <tr key={product.id}><td><strong>{product.name}</strong><small className="admin-order-items">{product.slug}</small></td><td>{product.seller}</td><td>{product.category}</td><td>{product.stock}</td><td><span className={`admin-status ${product.active ? "shipped" : "cancelled"}`}>{product.active ? "Published" : "Hidden"}</span></td></tr>)}</tbody></table></div> : <div className="admin-empty">No product records are in the shared catalog yet.</div>}
+    <section className="admin-dashboard-reference-grid" aria-label="Marketplace activity">
+      <article className="admin-card admin-dashboard-panel admin-inventory-panel">
+        <div className="admin-card-title"><div><h2>Inventory health</h2><p>Stock levels across catalog listings</p></div><Link href="/admin/products">Manage</Link></div>
+        <div className="admin-dashboard-panel-content">
+          <div className="admin-inventory-highlight"><strong>{outOfStock.error ? "—" : Number(outOfStock.count || 0).toLocaleString("en-RW")}</strong><span>out of stock</span></div>
+          <div className="admin-stock-list">{stockRows.map(row => <div className="admin-stock-row" key={row.label}>
+            <div className="admin-stock-row-label"><span>{row.label}</span><b>{row.available ? row.count.toLocaleString("en-RW") : "—"}</b></div>
+            <div className="admin-stock-track"><i className={row.tone} style={{ width: `${row.available ? ratio(row.count, totalProducts) : 0}%` }}/></div>
+          </div>)}</div>
+          <div className="admin-dashboard-panel-foot"><span>{activeStores.error ? "—" : Number(activeStores.count || 0).toLocaleString("en-RW")}</span> active stores in the marketplace</div>
+        </div>
       </article>
-      <article className="admin-card">
-        <div className="admin-card-title"><div><h2>Recent vendor stores</h2><p>Latest store registrations and their review status</p></div><Link href="/admin/sellers">Manage sellers</Link></div>
-        {recentStores.error ? <div className="admin-empty">Vendor records are unavailable. Check the Supabase table and access policies.</div> : recentStores.data?.length ? <div className="admin-table-wrap"><table className="admin-table"><thead><tr><th>STORE</th><th>LOCATION</th><th>STATUS</th><th>CREATED</th></tr></thead><tbody>{recentStores.data.map(store => <tr key={store.id}><td><strong>{store.name}</strong><small className="admin-order-items">/{store.slug}</small></td><td>{store.location || "—"}</td><td><span className={`admin-status ${(store.status || "pending").toLowerCase()}`}>{store.status}</span></td><td><time dateTime={store.created_at}>{String(store.created_at || "").slice(0, 10) || "—"}</time></td></tr>)}</tbody></table></div> : <div className="admin-empty">No vendor stores are in the shared database yet.</div>}
+
+      <article className="admin-card admin-dashboard-panel">
+        <div className="admin-card-title"><div><h2>Latest products</h2><p>Recently added to the catalog</p></div><Link href="/admin/products">All products</Link></div>
+        {recentProducts.error ? <div className="admin-empty">Product records are unavailable. Check the Supabase table and access policies.</div> : recentProducts.data?.length ? <div className="admin-dashboard-record-list">{recentProducts.data.map(product => <div className="admin-dashboard-record-row" key={product.id}>
+          <RecordMark>{product.name?.trim()?.[0]?.toUpperCase() || "P"}</RecordMark>
+          <span className="admin-dashboard-record-copy"><b>{product.name}</b><small>{product.seller} · {product.category}</small></span>
+          <span className={`admin-status ${product.active ? "shipped" : "cancelled"}`}>{product.active ? "Live" : "Hidden"}</span>
+        </div>)}</div> : <div className="admin-empty">No product records are in the shared catalog yet.</div>}
+      </article>
+
+      <article className="admin-card admin-dashboard-panel">
+        <div className="admin-card-title"><div><h2>Seller activity</h2><p>Store onboarding and recent registrations</p></div><Link href="/admin/sellers">Manage sellers</Link></div>
+        <div className="admin-seller-summary"><div><strong>{activeStores.error ? "—" : Number(activeStores.count || 0).toLocaleString("en-RW")}</strong><span>Active</span></div><div><strong>{pendingStores.error ? "—" : Number(pendingStores.count || 0).toLocaleString("en-RW")}</strong><span>Needs review</span></div></div>
+        {recentStores.error ? <div className="admin-empty">Seller records are unavailable. Check the Supabase table and access policies.</div> : recentStores.data?.length ? <div className="admin-dashboard-record-list admin-dashboard-store-list">{recentStores.data.map(store => {
+          const status = String(store.status || "pending").toLowerCase();
+          const label = status.charAt(0).toUpperCase() + status.slice(1);
+          return <div className="admin-dashboard-record-row" key={store.id}>
+            <RecordMark className="store">{store.name?.trim()?.[0]?.toUpperCase() || "S"}</RecordMark>
+            <span className="admin-dashboard-record-copy"><b>{store.name}</b><small>{store.location || "Location not listed"}</small></span>
+            <span className={`admin-status ${status === "pending" ? "pending" : status === "rejected" ? "cancelled" : ""}`}>{label}</span>
+          </div>;
+        })}</div> : <div className="admin-empty">No seller stores are in the shared database yet.</div>}
+        <div className="admin-dashboard-panel-foot">{newProducts.error || newStores.error ? "New records unavailable" : `${Number(newProducts.count || 0)} new products · ${Number(newStores.count || 0)} new stores`} · {rangeLabel.toLowerCase()}</div>
       </article>
     </section>
 
-    <section className="admin-card admin-unsupported-metrics">
-      <div className="admin-card-title"><div><h2>Orders and financial reporting</h2><p>These figures are intentionally omitted until they come from persisted marketplace transactions.</p></div></div>
-      <p>The connected Supabase marketplace schema currently has no shared orders, payment, refund, commission, payout, or audit tables. The old browser-local demo orders are not used for these production metrics.</p>
-    </section>
+    <aside className="admin-reporting-note"><strong>Sales reporting</strong><span>Order and payment reports will appear when shared marketplace transaction records are connected.</span></aside>
   </>;
 }
