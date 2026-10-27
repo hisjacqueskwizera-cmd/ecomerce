@@ -53,7 +53,7 @@ export default function ProductListing({ initialQuery = "", fixedCategory = "" }
     </nav>
     <div className="listing-layout">
       <aside className="filter-panel">
-        <div className="filter-title"><h3>Refine your search</h3><button onClick={clearFilters}>Clear all</button><button className="mobile-filter-toggle" onClick={() => setFiltersOpen(open => !open)} aria-expanded={filtersOpen}>{filtersOpen ? "Hide filters −" : "More filters +"}</button></div>
+        <div className="filter-title"><button onClick={clearFilters}>Clear all</button><button className="mobile-filter-toggle" onClick={() => setFiltersOpen(open => !open)} aria-expanded={filtersOpen}>{filtersOpen ? "Hide filters −" : "More filters +"}</button></div>
         <label className="filter-label">Search<input value={query} onChange={event => setQuery(event.target.value)} placeholder="Product, store, department"/></label>
         <div className={`filter-facets ${filtersOpen ? "is-open" : ""}`}>
           <div className="filter-group"><b>Department</b><button className={!category ? "filter-option selected" : "filter-option"} onClick={() => setCategory("")}>All products <span>{catalogProducts.length}</span></button>{categories.map(item => <button key={item} className={category === item ? "filter-option selected" : "filter-option"} onClick={() => setCategory(category === item ? "" : item)}>{item}<span>{catalogProducts.filter(product => product.category === item).length}</span></button>)}</div>
