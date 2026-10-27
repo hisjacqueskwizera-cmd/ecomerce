@@ -41,12 +41,12 @@ export default function ProductDetailPage() {
 
   return <main><StoreLayout>
     <Breadcrumbs items={[{ label: "Shop", href: "/shop" }, { label: product.category, href: `/shop?category=${encodeURIComponent(product.category)}` }, { label: product.name }]}/>
-    <section className="product-detail">
-      <div className="detail-gallery">
+    <section className="product-detail amazon-product-detail">
+      <div className="detail-gallery amazon-product-gallery">
         <ProductVisual product={activeProduct} large/>
         {photos.length > 1 && <div className="thumbnail-strip" aria-label="Product images">{photos.map((photo, index) => <button key={`${photo.slice(0, 40)}-${index}`} className={activeImage === index ? "active" : ""} onClick={() => setActiveImage(index)} aria-label={`Show image ${index + 1}`}><ProductVisual product={{ ...product, photo, photos: [] }} showBadge={false}/></button>)}</div>}
       </div>
-      <div className="detail-copy">
+      <div className="detail-copy amazon-product-copy">
         <div className="detail-listing-kicker"><span>{product.category}</span><span>{listingLabel}</span></div>
         <Link className="product-vendor" href={`/stores/${sellerSlug(product.seller)}`}>Sold by {product.seller} <span aria-hidden="true">↗</span></Link>
         <h1>{product.name}</h1>

@@ -1,4 +1,4 @@
-﻿@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap');
 
 .contact-form input,.contact-form select,.contact-form textarea{height:41px;width:100%;padding:0 11px;border:1px solid #e2e5e8;border-radius:2px;background:#fff;outline-color:#a2e7a4;font:inherit;font-size:12px;color:#454545}.contact-form textarea{height:auto;min-height:135px;padding:11px;resize:vertical}.contact-form input:focus,.contact-form select:focus,.contact-form textarea:focus{border-color:#9cdb9b;box-shadow:0 0 0 2px #80001F14}.contact-form select{appearance:auto}
 
@@ -27,6 +27,15 @@
 .property-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:17px 0;padding:15px;background:#f5f8fc;border:1px solid #e9edf3;border-radius:4px}.property-facts span{display:flex;flex-direction:column;gap:5px}.property-facts small{font-size:8px;letter-spacing:.8px;color:#8993a3}.property-facts b{font-size:11px;color:#333}
 .coupon-box{margin:13px 0;padding:13px;border:1px solid #e4eaf4;border-radius:5px;background:#f8faff}.coupon-box>b{font-size:11px}.coupon-box>p{font-size:9px;color:#858fa0;margin:4px 0 9px}.coupon-entry{display:flex;gap:6px}.coupon-entry input{min-width:0;flex:1;height:34px;border:1px solid #e1e7f0;border-radius:3px;padding:0 9px;font-size:10px;text-transform:uppercase}.coupon-entry button{height:34px;padding:0 11px;background:#80001F;color:#fff;border:0;border-radius:3px;font-size:10px;font-weight:700}.coupon-applied{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:9px;padding:8px;background:#eaf8f1;color:#16865b;border-radius:3px;font-size:9px}.coupon-applied button{background:none;border:0;color:#16865b;font-size:9px;text-decoration:underline}.coupon-success,.coupon-error{display:block;margin-top:8px;font-size:9px}.coupon-success{color:#16865b}.coupon-error{color:#c45148}.coupon-offers{margin-top:10px}.coupon-offers summary{font-size:9px;color:#60718d;cursor:pointer}.coupon-offers>div{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}.coupon-offers button{display:flex;flex-direction:column;gap:3px;padding:6px 7px;border:1px dashed #ced9ed;border-radius:3px;background:white;color:#53617a;text-align:left;font-size:8px}.coupon-offers button b{color:#4e73d4;font-size:9px}.discount-line{color:#16865b!important}.coupon-category-choices{margin-top:15px}.coupon-category-choices>b{font-size:10px;color:#53617a}.coupon-category-choices>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:10px;max-height:170px;overflow:auto}.coupon-category-choices label{display:flex;align-items:center;gap:6px;color:#66748a;font-size:9px;font-weight:400}.coupon-category-choices input{accent-color:#80001F}
 @media(max-width:760px){.product-art-large .product-symbol{width:170px;height:170px;font-size:78px}.property-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.coupon-box{padding:11px}}
+
+/* Product detail refinement: marketplace-first layout with the existing JashaMart palette. */
+.amazon-product-detail{grid-template-columns:minmax(360px,1.04fr) minmax(360px,.96fr);gap:38px;padding-top:8px;border-top:1px solid var(--line)}
+.amazon-product-gallery{background:#fff;border:1px solid var(--line);padding:24px;min-height:440px}
+.amazon-product-copy{padding:4px 0}
+.amazon-product-copy h1{font-size:29px;line-height:1.25;letter-spacing:-.35px;margin:10px 0 8px}
+.amazon-product-copy .detail-price{font-size:28px;font-weight:700;color:var(--green);border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:15px 0;margin:17px 0}
+.amazon-product-copy .detail-description{font-size:14px;line-height:1.7;color:#4e545b}
+@media(max-width:760px){.amazon-product-detail{display:block;padding-top:0;border-top:0}.amazon-product-gallery{min-height:300px;margin-bottom:22px;padding:14px}.amazon-product-copy h1{font-size:24px}.amazon-product-copy .detail-price{font-size:24px}}
 
 /* Keep storefront side navigation in view while the main content scrolls. */
 .home-layout>.sidebar,.layout-grid>.sidebar,.listing-layout>.filter-panel{position:sticky;top:16px;align-self:start}

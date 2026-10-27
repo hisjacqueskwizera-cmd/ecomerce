@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -66,11 +66,7 @@ export function StoreHeader() {
         <button className="mobile-menu-toggle" onClick={() => setMenuOpen(open => !open)} aria-expanded={menuOpen} aria-label={menuOpen ? "Close menu" : "Open menu"}>{menuOpen ? "×" : "☰"}</button>
       </div>
     </div></div>
-    {config.chrome.showNavigation && <nav className={`site-nav ${menuOpen ? "is-open" : ""}`}><div className="site-container site-nav-inner">
-      <div className="category-menu-wrap"><button className="category-menu-trigger" aria-expanded={categoriesOpen} onClick={() => setCategoriesOpen(open => !open)}><span>Shop by category</span><b aria-hidden="true">⌄</b></button>{categoriesOpen && <div className="category-menu"><strong>Shop by department</strong>{categories.map(item => <Link key={item} href={`/shop?category=${encodeURIComponent(item)}`} onClick={() => setCategoriesOpen(false)}>{item}<span>→</span></Link>)}<Link className="category-menu-all" href="/shop" onClick={() => setCategoriesOpen(false)}>View all products</Link></div>}</div>
-      <div className="site-nav-links">{config.chrome.nav.filter(item => item.active && item.label && item.href).map((item, index) => <Link key={`${item.href}-${index}`} href={item.href} onClick={() => setMenuOpen(false)}>{item.label}</Link>)}</div>
-      <span className="nav-note">Shop local · Rwanda-wide</span>
-    </div></nav>}
+
   </header>;
 }
 
