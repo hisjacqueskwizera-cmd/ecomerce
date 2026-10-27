@@ -70,6 +70,13 @@ export function StoreHeader() {
   </header>;
 }
 
+export function WhatsAppContact() {
+  const config = useStorefrontConfig();
+  const number = String(config.chrome.whatsappNumber || "").replace(/[^0-9]/g, "");
+  if (!number) return null;
+  return <a className="whatsapp-float" href={`https://wa.me/${number}`} target="_blank" rel="noreferrer" aria-label={config.chrome.whatsappLabel || "Chat with us on WhatsApp"}><span aria-hidden="true">WA</span><b>{config.chrome.whatsappLabel || "Chat with us on WhatsApp"}</b></a>;
+}
+
 export function StoreFooter() {
   const config = useStorefrontConfig();
   return <footer className="site-footer" id="footer"><div className="site-container footer-main">
@@ -90,5 +97,5 @@ export function Breadcrumbs({ items = [] }) {
 }
 
 export function StoreLayout({ children, sidebar = false }) {
-  return <div className="page-surface"><div className={`shell store-page ${sidebar ? "with-sidebar" : ""}`}>{children}</div></div>;
+  return <div className="page-surface"><div className={`shell store-page ${sidebar ? "with-sidebar" : ""}`}>{children}</div><WhatsAppContact /></div>;
 }
