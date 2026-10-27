@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -10,15 +10,30 @@ export default function StoreAdBanners({ placement = "global", variant = "banner
   const [banners, setBanners] = useState([]);
 
   useEffect(() => {
-    const supabase = createSupabaseBrowserClient();
     let alive = true;
+    let supabase;
+    let channel;
+
     const refresh = async () => {
-      const { data, error } = await supabase.from("ad_campaigns").select("*").eq("active", true).eq("placement", placement).order("display_order");
-      if (alive && !error) setBanners((data || []).map(campaignFromRow));
+      try {
+        supabase = createSupabaseBrowserClient();
+        const { data, error } = await supabase.from("ad_campaigns").select("*").eq("active", true).eq("placement", placement).order("display_order");
+        if (alive && !error) setBanners((data || []).map(campaignFromRow));
+        return supabase;
+      } catch {
+        return null;
+      }
     };
-    refresh();
-    const channel = supabase.channel(uniqueRealtimeTopic(`campaigns-${placement}`)).on("postgres_changes", { event: "*", schema: "public", table: "ad_campaigns", filter: `placement=eq.${placement}` }, refresh).subscribe();
-    return () => { alive = false; supabase.removeChannel(channel); };
+
+    refresh().then(client => {
+      if (!client || !alive) return;
+      channel = client.channel(uniqueRealtimeTopic(`campaigns-${placement}`)).on("postgres_changes", { event: "*", schema: "public", table: "ad_campaigns", filter: `placement=eq.${placement}` }, refresh).subscribe();
+    });
+
+    return () => {
+      alive = false;
+      if (channel && supabase) supabase.removeChannel(channel);
+    };
   }, [placement]);
 
   const visible = banners.filter(banner => banner.active !== false && banner.placement === placement);

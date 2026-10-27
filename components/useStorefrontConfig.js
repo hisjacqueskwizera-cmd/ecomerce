@@ -7,15 +7,30 @@ import { defaultStorefrontConfig, mergeStorefrontConfig } from "../lib/storefron
 export function useStorefrontConfig() {
   const [config, setConfig] = useState(defaultStorefrontConfig);
   useEffect(() => {
-    const supabase = createSupabaseBrowserClient();
     let alive = true;
+    let supabase;
+    let channel;
+
     const refresh = async () => {
-      const { data, error } = await supabase.from("storefront_settings").select("setting_value").eq("setting_key", "main").maybeSingle();
-      if (alive && !error && data?.setting_value) setConfig(mergeStorefrontConfig(data.setting_value));
+      try {
+        supabase = createSupabaseBrowserClient();
+        const { data, error } = await supabase.from("storefront_settings").select("setting_value").eq("setting_key", "main").maybeSingle();
+        if (alive && !error && data?.setting_value) setConfig(mergeStorefrontConfig(data.setting_value));
+        return supabase;
+      } catch {
+        return null;
+      }
     };
-    refresh();
-    const channel = supabase.channel(uniqueRealtimeTopic("storefront-settings-live")).on("postgres_changes", { event: "*", schema: "public", table: "storefront_settings", filter: "setting_key=eq.main" }, refresh).subscribe();
-    return () => { alive = false; supabase.removeChannel(channel); };
+
+    refresh().then(client => {
+      if (!client || !alive) return;
+      channel = client.channel(uniqueRealtimeTopic("storefront-settings-live")).on("postgres_changes", { event: "*", schema: "public", table: "storefront_settings", filter: "setting_key=eq.main" }, refresh).subscribe();
+    });
+
+    return () => {
+      alive = false;
+      if (channel && supabase) supabase.removeChannel(channel);
+    };
   }, []);
   return config;
 }
